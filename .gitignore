@@ -1,2 +1,8 @@
+# Builds
+out
+
+# IDE Folders
+.vs
+
 # Windows 10 File System
 desktop.ini
