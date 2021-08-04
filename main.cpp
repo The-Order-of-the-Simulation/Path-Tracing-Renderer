@@ -1,3 +1,5 @@
+#include <iostream>
+//using namespace std;
 
 #include <vulkan/vulkan.h>
 
@@ -9,26 +11,29 @@
 
 #include "lodepng.h" //Used for png encoding.
 
-const int WIDTH = 3200; // Size of rendered mandelbrot set.
-const int HEIGHT = 2400; // Size of renderered mandelbrot set.
+const int WIDTH = 1920; // Size of rendered mandelbrot set.
+const int HEIGHT = 1080; // Size of renderered mandelbrot set.
 const int WORKGROUP_SIZE = 32; // Workgroup size in compute shader.
 
+/*
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
-//const bool enableValidationLayers = true;
-const bool enableValidationLayers = false;
+const bool enableValidationLayers = true;
 #endif
+*/
+
+const bool enableValidationLayers = false;
 
 // Used for validating return values of Vulkan API calls.
-#define VK_CHECK_RESULT(f) 																				\
-{																										\
-	VkResult res = (f);																					\
-	if (res != VK_SUCCESS)																				\
-	{																									\
-		printf("Fatal : VkResult is %d in %s at line %d\n", res,  __FILE__, __LINE__); \
-		assert(res == VK_SUCCESS);																		\
-	}																									\
+#define VK_CHECK_RESULT(f) 																\
+{																						\
+	VkResult res = (f);																	\
+	if (res != VK_SUCCESS)																\
+	{																					\
+		printf("Fatal : VkResult is %d in %s at line %d\n", res,  __FILE__, __LINE__);	\
+		assert(res == VK_SUCCESS);														\
+	}																					\
 }
 
 /*
@@ -122,7 +127,8 @@ private:
 	uint32_t queueFamilyIndex;
 
 public:
-	void run() {
+	void run()
+	{
 		// Buffer size of the storage buffer that will contain the rendered mandelbrot set.
 		bufferSize = sizeof(Pixel) * WIDTH * HEIGHT;
 
@@ -147,7 +153,8 @@ public:
 		cleanup();
 	}
 
-	void saveRenderedImage() {
+	void saveRenderedImage()
+	{
 		void* mappedMemory = NULL;
 		// Map the buffer memory, so that we can read from it on the CPU.
 		vkMapMemory(device, bufferMemory, 0, bufferSize, 0, &mappedMemory);
@@ -157,7 +164,8 @@ public:
 		// We save the data to a vector.
 		std::vector<unsigned char> image;
 		image.reserve(WIDTH * HEIGHT * 4);
-		for (int i = 0; i < WIDTH*HEIGHT; i += 1) {
+		for(int i = 0; i < WIDTH*HEIGHT; i += 1)
+		{
 			image.push_back((unsigned char)(255.0f * (pmappedMemory[i].r)));
 			image.push_back((unsigned char)(255.0f * (pmappedMemory[i].g)));
 			image.push_back((unsigned char)(255.0f * (pmappedMemory[i].b)));
@@ -186,7 +194,8 @@ public:
 		return VK_FALSE;
 	 }
 
-	void createInstance() {
+	void createInstance()
+	{
 		std::vector<const char *> enabledExtensions;
 
 		/*
@@ -194,7 +203,8 @@ public:
 		is used incorrectly. We shall enable the layer VK_LAYER_LUNARG_standard_validation,
 		which is basically a collection of several useful validation layers.
 		*/
-		if (enableValidationLayers) {
+		if(enableValidationLayers)
+		{
 			/*
 			We get all supported layers with vkEnumerateInstanceLayerProperties.
 			*/
@@ -208,7 +218,8 @@ public:
 			And then we simply check if VK_LAYER_LUNARG_standard_validation is among the supported layers.
 			*/
 			bool foundLayer = false;
-			for (VkLayerProperties prop : layerProperties) {
+			for(VkLayerProperties prop : layerProperties)
+			{
 				
 				if (strcmp("VK_LAYER_LUNARG_standard_validation", prop.layerName) == 0) {
 					foundLayer = true;
@@ -217,7 +228,8 @@ public:
 
 			}
 			
-			if (!foundLayer) {
+			if(!foundLayer)
+			{
 				throw std::runtime_error("Layer VK_LAYER_LUNARG_standard_validation not supported\n");
 			}
 			enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation"); // Alright, we can use this layer.
@@ -236,15 +248,18 @@ public:
 			vkEnumerateInstanceExtensionProperties(NULL, &extensionCount, extensionProperties.data());
 
 			bool foundExtension = false;
-			for (VkExtensionProperties prop : extensionProperties) {
-				if (strcmp(VK_EXT_DEBUG_REPORT_EXTENSION_NAME, prop.extensionName) == 0) {
+			for(VkExtensionProperties prop : extensionProperties)
+			{
+				if(strcmp(VK_EXT_DEBUG_REPORT_EXTENSION_NAME, prop.extensionName) == 0)
+				{
 					foundExtension = true;
 					break;
 				}
 
 			}
 
-			if (!foundExtension) {
+			if(!foundExtension)
+			{
 				throw std::runtime_error("Extension VK_EXT_DEBUG_REPORT_EXTENSION_NAME not supported\n");
 			}
 			enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -282,16 +297,14 @@ public:
 		Actually create the instance.
 		Having created the instance, we can actually start using vulkan.
 		*/
-		VK_CHECK_RESULT(vkCreateInstance(
-			&createInfo,
-			NULL,
-			&instance));
+		VK_CHECK_RESULT(vkCreateInstance(&createInfo, NULL, &instance));
 
 		/*
 		Register a callback function for the extension VK_EXT_DEBUG_REPORT_EXTENSION_NAME, so that warnings emitted from the validation
 		layer are actually printed.
 		*/
-		if (enableValidationLayers) {
+		if (enableValidationLayers)
+		{
 			VkDebugReportCallbackCreateInfoEXT createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 			createInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
@@ -299,7 +312,8 @@ public:
 
 			// We have to explicitly load this function.
 			auto vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
-			if (vkCreateDebugReportCallbackEXT == nullptr) {
+			if(vkCreateDebugReportCallbackEXT == nullptr)
+			{
 				throw std::runtime_error("Could not load vkCreateDebugReportCallbackEXT");
 			}
 
@@ -309,7 +323,8 @@ public:
 	
 	}
 
-	void findPhysicalDevice() {
+	void findPhysicalDevice()
+	{
 		/*
 		In this function, we find a physical device that can be used with Vulkan.
 		*/
@@ -348,16 +363,20 @@ public:
 		device in the list. But in a real and serious application, those limitations should certainly be taken into account.
 
 		*/
-		for (VkPhysicalDevice device : devices) {
-			if (true) { // As above stated, we do no feature checks, so just accept.
+		for(VkPhysicalDevice device : devices)
+		{
+			//if(true)
+			//{
+				// As above stated, we do no feature checks, so just accept.
 				physicalDevice = device;
 				break;
-			}
+			//}
 		}
 	}
 
 	// Returns the index of a queue family that supports compute operations. 
-	uint32_t getComputeQueueFamilyIndex() {
+	uint32_t getComputeQueueFamilyIndex()
+	{
 		uint32_t queueFamilyCount;
 
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, NULL);
@@ -368,10 +387,12 @@ public:
 
 		// Now find a family that supports compute.
 		uint32_t i = 0;
-		for (; i < queueFamilies.size(); ++i) {
+		for(; i < queueFamilies.size(); ++i)
+		{
 			VkQueueFamilyProperties props = queueFamilies[i];
 
-			if (props.queueCount > 0 && (props.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+			if(props.queueCount > 0 && (props.queueFlags & VK_QUEUE_COMPUTE_BIT))
+			{
 				// found a queue with compute. We're done!
 				break;
 			}
@@ -384,7 +405,8 @@ public:
 		return i;
 	}
 
-	void createDevice() {
+	void createDevice()
+	{
 		/*
 		We create the logical device in this function.
 		*/
@@ -423,7 +445,8 @@ public:
 	}
 
 	// find memory type with desired properties.
-	uint32_t findMemoryType(uint32_t memoryTypeBits, VkMemoryPropertyFlags properties) {
+	uint32_t findMemoryType(uint32_t memoryTypeBits, VkMemoryPropertyFlags properties)
+	{
 		VkPhysicalDeviceMemoryProperties memoryProperties;
 
 		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
@@ -432,7 +455,8 @@ public:
 		How does this search work?
 		See the documentation of VkPhysicalDeviceMemoryProperties for a detailed description. 
 		*/
-		for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
+		for(uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i)
+		{
 			if ((memoryTypeBits & (1 << i)) &&
 				((memoryProperties.memoryTypes[i].propertyFlags & properties) == properties))
 				return i;
@@ -440,7 +464,8 @@ public:
 		return -1;
 	}
 
-	void createBuffer() {
+	void createBuffer()
+	{
 		/*
 		We will now create a buffer. We will render the mandelbrot set into this buffer
 		in a computer shade later. 
@@ -489,7 +514,8 @@ public:
 		VK_CHECK_RESULT(vkBindBufferMemory(device, buffer, bufferMemory, 0));
 	}
 
-	void createDescriptorSetLayout() {
+	void createDescriptorSetLayout()
+	{
 		/*
 		Here we specify a descriptor set layout. This allows us to bind our descriptors to 
 		resources in the shader. 
@@ -519,7 +545,8 @@ public:
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, NULL, &descriptorSetLayout));
 	}
 
-	void createDescriptorSet() {
+	void createDescriptorSet()
+	{
 		/*
 		So we will allocate a descriptor set here.
 		But we need to first create a descriptor pool to do that. 
@@ -578,7 +605,8 @@ public:
 
 	// Read file into array of bytes, and cast to uint32_t*, then return.
 	// The data has been padded, so that it fits into an array uint32_t.
-	uint32_t* readFile(uint32_t& length, const char* filename) {
+	uint32_t* readFile(uint32_t& length, const char* filename)
+	{
 
 		FILE* fp = fopen(filename, "rb");
 		if (fp == NULL) {
@@ -606,7 +634,8 @@ public:
 		return (uint32_t *)str;
 	}
 
-	void createComputePipeline() {
+	void createComputePipeline()
+	{
 		/*
 		We create a compute pipeline here. 
 		*/
@@ -663,7 +692,8 @@ public:
 			NULL, &pipeline));
 	}
 
-	void createCommandBuffer() {
+	void createCommandBuffer()
+	{
 		/*
 		We are getting closer to the end. In order to send commands to the device(GPU),
 		we must first record commands into a command buffer.
@@ -716,7 +746,8 @@ public:
 		VK_CHECK_RESULT(vkEndCommandBuffer(commandBuffer)); // end recording commands.
 	}
 
-	void runCommandBuffer() {
+	void runCommandBuffer()
+	{
 		/*
 		Now we shall finally submit the recorded command buffer to a queue.
 		*/
@@ -751,7 +782,8 @@ public:
 		vkDestroyFence(device, fence, NULL);
 	}
 
-	void cleanup() {
+	void cleanup()
+	{
 		/*
 		Clean up all Vulkan Resources. 
 		*/
@@ -778,17 +810,29 @@ public:
 	}
 };
 
+// Main Function
 int main()
 {
+	// Output "Starting Render..." to Console
+	std::cout << "Starting Render..." << std::endl;
+
+	// Initialize
 	ComputeApplication app;
 
-	try {
+	// Execute
+	try
+	{
 		app.run();
 	}
-	catch (const std::runtime_error& e) {
+	catch(const std::runtime_error& e)
+	{
 		printf("%s\n", e.what());
 		return EXIT_FAILURE;
 	}
 
+	// Output "Done!" to Console
+	std::cout << "Done!" << std::endl;
+
+	// Return Exit Code
 	return EXIT_SUCCESS;
 }
