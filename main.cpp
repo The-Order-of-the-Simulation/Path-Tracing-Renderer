@@ -1,6 +1,7 @@
 #include <iostream>
 //using namespace std;
 
+// Include vulkan.h
 #include <vulkan/vulkan.h>
 
 #include <vector>
@@ -15,15 +16,11 @@ const int WIDTH = 1920; // Size of rendered mandelbrot set.
 const int HEIGHT = 1080; // Size of renderered mandelbrot set.
 const int WORKGROUP_SIZE = 32; // Workgroup size in compute shader.
 
-/*
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
 const bool enableValidationLayers = true;
 #endif
-*/
-
-const bool enableValidationLayers = false;
 
 // Used for validating return values of Vulkan API calls.
 #define VK_CHECK_RESULT(f) 																\
@@ -163,13 +160,13 @@ public:
 		// Get the color data from the buffer, and cast it to bytes.
 		// We save the data to a vector.
 		std::vector<unsigned char> image;
-		image.reserve(WIDTH * HEIGHT * 4);
+		image.reserve(WIDTH*HEIGHT*4);
 		for(int i = 0; i < WIDTH*HEIGHT; i += 1)
 		{
-			image.push_back((unsigned char)(255.0f * (pmappedMemory[i].r)));
-			image.push_back((unsigned char)(255.0f * (pmappedMemory[i].g)));
-			image.push_back((unsigned char)(255.0f * (pmappedMemory[i].b)));
-			image.push_back((unsigned char)(255.0f * (pmappedMemory[i].a)));
+			image.push_back((unsigned char)(255.0F * (pmappedMemory[i].r)));
+			image.push_back((unsigned char)(255.0F * (pmappedMemory[i].g)));
+			image.push_back((unsigned char)(255.0F * (pmappedMemory[i].b)));
+			image.push_back((unsigned char)(255.0F * (pmappedMemory[i].a)));
 		}
 		// Done reading, so unmap.
 		vkUnmapMemory(device, bufferMemory);
@@ -179,20 +176,11 @@ public:
 		if (error) printf("encoder error %d: %s", error, lodepng_error_text(error));
 	}
 
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugReportCallbackFn(
-		VkDebugReportFlagsEXT                       flags,
-		VkDebugReportObjectTypeEXT                  objectType,
-		uint64_t                                    object,
-		size_t                                      location,
-		int32_t                                     messageCode,
-		const char*                                 pLayerPrefix,
-		const char*                                 pMessage,
-		void*                                       pUserData) {
-
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugReportCallbackFn(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
+	{
 		printf("Debug Report: %s: %s\n", pLayerPrefix, pMessage);
-
 		return VK_FALSE;
-	 }
+	}
 
 	void createInstance()
 	{
@@ -200,7 +188,7 @@ public:
 
 		/*
 		By enabling validation layers, Vulkan will emit warnings if the API
-		is used incorrectly. We shall enable the layer VK_LAYER_LUNARG_standard_validation,
+		is used incorrectly. We shall enable the layer VK_LAYER_KHRONOS_validation,
 		which is basically a collection of several useful validation layers.
 		*/
 		if(enableValidationLayers)
@@ -215,13 +203,13 @@ public:
 			vkEnumerateInstanceLayerProperties(&layerCount, layerProperties.data());
 
 			/*
-			And then we simply check if VK_LAYER_LUNARG_standard_validation is among the supported layers.
+			And then we simply check if VK_LAYER_KHRONOS_validation is among the supported layers.
 			*/
 			bool foundLayer = false;
 			for(VkLayerProperties prop : layerProperties)
 			{
-				
-				if (strcmp("VK_LAYER_LUNARG_standard_validation", prop.layerName) == 0) {
+				if(strcmp("VK_LAYER_KHRONOS_validation", prop.layerName) == 0)
+				{
 					foundLayer = true;
 					break;
 				}
@@ -230,9 +218,10 @@ public:
 			
 			if(!foundLayer)
 			{
-				throw std::runtime_error("Layer VK_LAYER_LUNARG_standard_validation not supported\n");
+				throw std::runtime_error("Layer VK_LAYER_KHRONOS_validation not supported\n");
 			}
-			enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation"); // Alright, we can use this layer.
+
+			enabledLayers.push_back("VK_LAYER_KHRONOS_validation"); // Alright, we can use this layer.
 
 			/*
 			We need to enable an extension named VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
@@ -240,9 +229,9 @@ public:
 
 			So again, we just check if the extension is among the supported extensions.
 			*/
-			
+
 			uint32_t extensionCount;
-			
+
 			vkEnumerateInstanceExtensionProperties(NULL, &extensionCount, NULL);
 			std::vector<VkExtensionProperties> extensionProperties(extensionCount);
 			vkEnumerateInstanceExtensionProperties(NULL, &extensionCount, extensionProperties.data());
@@ -263,36 +252,36 @@ public:
 				throw std::runtime_error("Extension VK_EXT_DEBUG_REPORT_EXTENSION_NAME not supported\n");
 			}
 			enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-		}		
+		}
 
 		/*
 		Next, we actually create the instance.
 		
 		*/
-		
+
 		/*
 		Contains application info. This is actually not that important.
 		The only real important field is apiVersion.
 		*/
 		VkApplicationInfo applicationInfo = {};
 		applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		applicationInfo.pApplicationName = "Hello world app";
+		applicationInfo.pApplicationName = "Path-Tracing Renderer";
 		applicationInfo.applicationVersion = 0;
-		applicationInfo.pEngineName = "awesomeengine";
+		applicationInfo.pEngineName = "OpenPT";
 		applicationInfo.engineVersion = 0;
-		applicationInfo.apiVersion = VK_API_VERSION_1_0;;
-		
+		applicationInfo.apiVersion = VK_API_VERSION_1_0;
+
 		VkInstanceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.flags = 0;
 		createInfo.pApplicationInfo = &applicationInfo;
-		
+
 		// Give our desired layers and extensions to vulkan.
 		createInfo.enabledLayerCount = enabledLayers.size();
 		createInfo.ppEnabledLayerNames = enabledLayers.data();
 		createInfo.enabledExtensionCount = enabledExtensions.size();
 		createInfo.ppEnabledExtensionNames = enabledExtensions.data();
-	
+
 		/*
 		Actually create the instance.
 		Having created the instance, we can actually start using vulkan.
@@ -303,7 +292,7 @@ public:
 		Register a callback function for the extension VK_EXT_DEBUG_REPORT_EXTENSION_NAME, so that warnings emitted from the validation
 		layer are actually printed.
 		*/
-		if (enableValidationLayers)
+		if(enableValidationLayers)
 		{
 			VkDebugReportCallbackCreateInfoEXT createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
@@ -334,8 +323,9 @@ public:
 		*/
 		uint32_t deviceCount;
 		vkEnumeratePhysicalDevices(instance, &deviceCount, NULL);
-		if (deviceCount == 0) {
-			throw std::runtime_error("could not find a device with vulkan support");
+		if(deviceCount == 0)
+		{
+			throw std::runtime_error("Could not find a device with Vulkan support!");
 		}
 
 		std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -361,7 +351,6 @@ public:
 
 		Therefore, to keep things simple and clean, we will not perform any such checks here, and just pick the first physical
 		device in the list. But in a real and serious application, those limitations should certainly be taken into account.
-
 		*/
 		for(VkPhysicalDevice device : devices)
 		{
@@ -398,7 +387,8 @@ public:
 			}
 		}
 
-		if (i == queueFamilies.size()) {
+		if(i == queueFamilies.size())
+		{
 			throw std::runtime_error("could not find a queue family that supports operations");
 		}
 
@@ -538,10 +528,10 @@ public:
 
 		VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
 		descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		descriptorSetLayoutCreateInfo.bindingCount = 1; // only a single binding in this descriptor set layout. 
+		descriptorSetLayoutCreateInfo.bindingCount = 1; // only a single binding in this descriptor set layout.
 		descriptorSetLayoutCreateInfo.pBindings = &descriptorSetLayoutBinding; 
 
-		// Create the descriptor set layout. 
+		// Create the descriptor set layout.
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, NULL, &descriptorSetLayout));
 	}
 
@@ -549,7 +539,7 @@ public:
 	{
 		/*
 		So we will allocate a descriptor set here.
-		But we need to first create a descriptor pool to do that. 
+		But we need to first create a descriptor pool to do that.
 		*/
 
 		/*
@@ -569,10 +559,10 @@ public:
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, NULL, &descriptorPool));
 
 		/*
-		With the pool allocated, we can now allocate the descriptor set. 
+		With the pool allocated, we can now allocate the descriptor set.
 		*/
 		VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
-		descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO; 
+		descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		descriptorSetAllocateInfo.descriptorPool = descriptorPool; // pool to allocate from.
 		descriptorSetAllocateInfo.descriptorSetCount = 1; // allocate a single descriptor set.
 		descriptorSetAllocateInfo.pSetLayouts = &descriptorSetLayout;
@@ -581,7 +571,7 @@ public:
 		VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &descriptorSet));
 
 		/*
-		Next, we need to connect our actual storage buffer with the descrptor. 
+		Next, we need to connect our actual storage buffer with the descrptor.
 		We use vkUpdateDescriptorSets() to update the descriptor set.
 		*/
 
@@ -599,34 +589,36 @@ public:
 		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // storage buffer.
 		writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;
 
-		// perform the update of the descriptor set.
+		// Perform the update of the descriptor set
 		vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, NULL);
 	}
 
-	// Read file into array of bytes, and cast to uint32_t*, then return.
-	// The data has been padded, so that it fits into an array uint32_t.
+	// Read file into array of bytes, and cast to uint32_t*, then return
+	// The data has been padded, so that it fits into an array uint32_t
 	uint32_t* readFile(uint32_t& length, const char* filename)
 	{
 
 		FILE* fp = fopen(filename, "rb");
-		if (fp == NULL) {
+		if(fp == NULL)
+		{
 			printf("Could not find or open file: %s\n", filename);
 		}
 
-		// get file size.
+		// Get File Size
 		fseek(fp, 0, SEEK_END);
 		long filesize = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 
-		long filesizepadded = long(ceil(filesize / 4.0)) * 4;
+		long filesizepadded = long(ceil(filesize/4.0))*4;
 
-		// read file contents.
+		// Read File Contents
 		char *str = new char[filesizepadded];
 		fread(str, filesize, sizeof(char), fp);
 		fclose(fp);
 
 		// data padding. 
-		for (int i = filesize; i < filesizepadded; i++) {
+		for(int i = filesize; i < filesizepadded; i++)
+		{
 			str[i] = 0;
 		}
 
@@ -644,9 +636,9 @@ public:
 		Create a shader module. A shader module basically just encapsulates some shader code.
 		*/
 		uint32_t filelength;
-		// the code in comp.spv was created by running the command:
+		// the code in main.spv was created by running the command:
 		// glslangValidator.exe -V shader.comp
-		uint32_t* code = readFile(filelength, "comp.spv");
+		uint32_t* code = readFile(filelength, "main.spv");
 		VkShaderModuleCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		createInfo.pCode = code;
@@ -658,7 +650,7 @@ public:
 		/*
 		Now let us actually create the compute pipeline.
 		A compute pipeline is very simple compared to a graphics pipeline.
-		It only consists of a single stage with a compute shader. 
+		It only consists of a single stage with a compute shader.
 
 		So first we specify the compute shader stage, and it's entry point(main).
 		*/
@@ -684,12 +676,9 @@ public:
 		pipelineCreateInfo.layout = pipelineLayout;
 
 		/*
-		Now, we finally create the compute pipeline. 
+		Now, we finally create the compute pipeline.
 		*/
-		VK_CHECK_RESULT(vkCreateComputePipelines(
-			device, VK_NULL_HANDLE,
-			1, &pipelineCreateInfo,
-			NULL, &pipeline));
+		VK_CHECK_RESULT(vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineCreateInfo, NULL, &pipeline));
 	}
 
 	void createCommandBuffer()
@@ -758,7 +747,7 @@ public:
 		submitInfo.pCommandBuffers = &commandBuffer; // the command buffer to submit.
 
 		/*
-		  We create a fence.
+		We create a fence.
 		*/
 		VkFence fence;
 		VkFenceCreateInfo fenceCreateInfo = {};
@@ -777,7 +766,8 @@ public:
 		and we will not be sure that the command has finished executing unless we wait for the fence.
 		Hence, we use a fence here.
 		*/
-		VK_CHECK_RESULT(vkWaitForFences(device, 1, &fence, VK_TRUE, 100000000000));
+		// 10 Second Timeout
+		VK_CHECK_RESULT(vkWaitForFences(device, 1, &fence, VK_TRUE, 10000000000));
 
 		vkDestroyFence(device, fence, NULL);
 	}
@@ -787,26 +777,27 @@ public:
 		/*
 		Clean up all Vulkan Resources. 
 		*/
-
-		if (enableValidationLayers) {
+		if(enableValidationLayers)
+		{
 			// destroy callback.
 			auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
-			if (func == nullptr) {
+			if(func == nullptr)
+			{
 				throw std::runtime_error("Could not load vkDestroyDebugReportCallbackEXT");
 			}
 			func(instance, debugReportCallback, NULL);
 		}
 
 		vkFreeMemory(device, bufferMemory, NULL);
-		vkDestroyBuffer(device, buffer, NULL);	
+		vkDestroyBuffer(device, buffer, NULL);
 		vkDestroyShaderModule(device, computeShaderModule, NULL);
 		vkDestroyDescriptorPool(device, descriptorPool, NULL);
 		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, NULL);
 		vkDestroyPipelineLayout(device, pipelineLayout, NULL);
 		vkDestroyPipeline(device, pipeline, NULL);
-		vkDestroyCommandPool(device, commandPool, NULL);	
+		vkDestroyCommandPool(device, commandPool, NULL);
 		vkDestroyDevice(device, NULL);
-		vkDestroyInstance(instance, NULL);		
+		vkDestroyInstance(instance, NULL);
 	}
 };
 
@@ -826,7 +817,8 @@ int main()
 	}
 	catch(const std::runtime_error& e)
 	{
-		printf("%s\n", e.what());
+		std::cout << "A Runtime Error Occured! Details:" << std::endl;
+		std::cout << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
 

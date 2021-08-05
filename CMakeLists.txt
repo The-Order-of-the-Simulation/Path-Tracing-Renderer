@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories(${Vulkan_INCLUDE_DIR})
 
-set(ALL_LIBS  ${Vulkan_LIBRARY} )
+set(ALL_LIBS  ${Vulkan_LIBRARY})
 
 add_executable(pathtracingrenderer main.cpp lodepng.cpp)
 
