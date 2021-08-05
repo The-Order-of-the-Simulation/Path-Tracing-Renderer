@@ -1,8 +1,8 @@
 #include <iostream>
 //using namespace std;
 
-// Include vulkan.h
-#include <vulkan/vulkan.h>
+// Include vulkan.hpp
+#include <vulkan/vulkan.hpp>
 
 #include <vector>
 #include <string.h>
@@ -23,10 +23,10 @@ const bool enableValidationLayers = true;
 #endif
 
 // Used for validating return values of Vulkan API calls.
-#define VK_CHECK_RESULT(f) 																\
+#define VK_CHECK_RESULT(f)																\
 {																						\
 	VkResult res = (f);																	\
-	if (res != VK_SUCCESS)																\
+	if(res != VK_SUCCESS)																\
 	{																					\
 		printf("Fatal : VkResult is %d in %s at line %d\n", res,  __FILE__, __LINE__);	\
 		assert(res == VK_SUCCESS);														\
@@ -46,26 +46,26 @@ private:
 	};
 	
 	/*
-	In order to use Vulkan, you must create an instance. 
+	In order to use Vulkan, you must create an instance.
 	*/
 	VkInstance instance;
 
 	VkDebugReportCallbackEXT debugReportCallback;
 	/*
 	The physical device is some device on the system that supports usage of Vulkan.
-	Often, it is simply a graphics card that supports Vulkan. 
+	Often, it is simply a graphics card that supports Vulkan.
 	*/
 	VkPhysicalDevice physicalDevice;
 	/*
-	Then we have the logical device VkDevice, which basically allows 
-	us to interact with the physical device. 
+	Then we have the logical device VkDevice, which basically allows
+	us to interact with the physical device.
 	*/
 	VkDevice device;
 
 	/*
 	The pipeline specifies the pipeline that all graphics and compute commands pass though in Vulkan.
 
-	We will be creating a simple compute pipeline in this application. 
+	We will be creating a simple compute pipeline in this application.
 	*/
 	VkPipeline pipeline;
 	VkPipelineLayout pipelineLayout;
@@ -82,7 +82,7 @@ private:
 	/*
 
 	Descriptors represent resources in shaders. They allow us to use things like
-	uniform buffers, storage buffers and images in GLSL. 
+	uniform buffers, storage buffers and images in GLSL.
 
 	A single descriptor represents a single resource, and several descriptors are organized
 	into descriptor sets, which are basically just collections of descriptors.
@@ -94,11 +94,11 @@ private:
 	/*
 	The mandelbrot set will be rendered to this buffer.
 
-	The memory that backs the buffer is bufferMemory. 
+	The memory that backs the buffer is bufferMemory.
 	*/
 	VkBuffer buffer;
 	VkDeviceMemory bufferMemory;
-		
+
 	uint32_t bufferSize; // size of `buffer` in bytes.
 
 	std::vector<const char *> enabledLayers;
@@ -110,16 +110,16 @@ private:
 
 	There will be different kinds of queues on the device. Not all queues support
 	graphics operations, for instance. For this application, we at least want a queue
-	that supports compute operations. 
+	that supports compute operations.
 	*/
 	VkQueue queue; // a queue supporting compute operations.
 
 	/*
 	Groups of queues that have the same capabilities(for instance, they all supports graphics and computer operations),
-	are grouped into queue families. 
-	
-	When submitting a command buffer, you must specify to which queue in the family you are submitting to. 
-	This variable keeps track of the index of that queue in its family. 
+	are grouped into queue families.
+
+	When submitting a command buffer, you must specify to which queue in the family you are submitting to.
+	This variable keeps track of the index of that queue in its family.
 	*/
 	uint32_t queueFamilyIndex;
 
@@ -127,7 +127,10 @@ public:
 	void run()
 	{
 		// Buffer size of the storage buffer that will contain the rendered mandelbrot set.
-		bufferSize = sizeof(Pixel) * WIDTH * HEIGHT;
+		bufferSize = sizeof(Pixel)*WIDTH*HEIGHT;
+
+		// Output "Initializing Vulkan" to Console
+		std::cout << "Initializing Vulkan" << std::endl;
 
 		// Initialize vulkan:
 		createInstance();
@@ -139,12 +142,21 @@ public:
 		createComputePipeline();
 		createCommandBuffer();
 
+		// Output "Running Renderer" to Console
+		std::cout << "Running Renderer" << std::endl;
+
 		// Finally, run the recorded command buffer.
 		runCommandBuffer();
+
+		// Output "Saving Render" to Console
+		std::cout << "Saving Render" << std::endl;
 
 		// The former command rendered a mandelbrot set to a buffer.
 		// Save that buffer as a png on disk.
 		saveRenderedImage();
+
+		// Output "Cleaning Up" to Console
+		std::cout << "Cleaning Up" << std::endl;
 
 		// Clean up all vulkan resources.
 		cleanup();
@@ -171,9 +183,13 @@ public:
 		// Done reading, so unmap.
 		vkUnmapMemory(device, bufferMemory);
 
-		// Now we save the acquired color data to a .png.
+		// Now we save the acquired color data to a .png
 		unsigned error = lodepng::encode("mandelbrot.png", image, WIDTH, HEIGHT);
-		if (error) printf("encoder error %d: %s", error, lodepng_error_text(error));
+		if(error)
+		{
+			//printf("encoder error %d: %s", error, lodepng_error_text(error));
+			std::cout << "Encoder Error " << error << ": " << lodepng_error_text(error) << std::endl;
+		}
 	}
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugReportCallbackFn(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
@@ -256,7 +272,6 @@ public:
 
 		/*
 		Next, we actually create the instance.
-		
 		*/
 
 		/*
@@ -354,12 +369,18 @@ public:
 		*/
 		for(VkPhysicalDevice device : devices)
 		{
-			//if(true)
-			//{
+			/*
+			if(true)
+			{
 				// As above stated, we do no feature checks, so just accept.
 				physicalDevice = device;
 				break;
-			//}
+			}
+			*/
+
+			// As above stated, we do no feature checks, so just accept.
+			physicalDevice = device;
+			break;
 		}
 	}
 
@@ -447,10 +468,12 @@ public:
 		*/
 		for(uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i)
 		{
-			if ((memoryTypeBits & (1 << i)) &&
-				((memoryProperties.memoryTypes[i].propertyFlags & properties) == properties))
+			if((memoryTypeBits & (1 << i)) && ((memoryProperties.memoryTypes[i].propertyFlags & properties) == properties))
+			{
 				return i;
+			}
 		}
+
 		return -1;
 	}
 
