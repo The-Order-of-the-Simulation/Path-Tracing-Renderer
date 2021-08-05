@@ -789,8 +789,8 @@ public:
 		and we will not be sure that the command has finished executing unless we wait for the fence.
 		Hence, we use a fence here.
 		*/
-		// 10 Second Timeout
-		VK_CHECK_RESULT(vkWaitForFences(device, 1, &fence, VK_TRUE, 10000000000));
+		// 2 Second Timeout (1 second = 1000000000)
+		VK_CHECK_RESULT(vkWaitForFences(device, 1, &fence, VK_TRUE, 2000000000));
 
 		vkDestroyFence(device, fence, NULL);
 	}
