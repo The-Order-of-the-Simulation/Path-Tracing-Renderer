@@ -15,6 +15,14 @@ layout(std140, binding = 0) buffer buf
 	Pixel imageData[];
 };
 
+// ##### Parameters #####
+
+// Camera Field of View
+#define camfov 1.0
+
+// Image Exposure
+#define exposure 1.0
+
 // ##### Constants #####
 
 // http://www.mimirgames.com/articles/programming/digits-of-pi-needed-for-floating-point-numbers/
@@ -90,15 +98,115 @@ vec3 udir3()
 
 // ##### Rendering #####
 
+#define hitDist 0.001
+
+// Scene Distance Estimator
+float DE(vec3 pos)
+{
+	// Transform the SDF (and dither the position to remove weird artifacts)
+	//pos = (vec3(-0.2, 0.2, 1.2)+nrand3(hitDist, pos)).xzy;
+
+	// Soft Edges
+	//pos = nrand3(0.0003, pos);
+
+	// Set-Up Variables
+	pos = pos.xzy;
+	vec3 z = pos;
+	float dr = 1.0;
+	float r = 0.0;
+
+	// Iterate Mandelbulb
+	for(uint i = 0U; i < 32U; i++)
+	{
+		r = length(z);
+
+		// Bailout
+		if(r > 4.0)
+		{
+			break;
+		}
+
+		// Iterate the Mandelbulb
+		float theta = acos(z.z/r)*8.0;
+		float phi = atan(z.y, z.x)*8.0;
+		dr = r*r*r*r*r*r*r*8.0*dr+1.0;
+		z = r*r*r*r*r*r*r*r*vec3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta));
+		z += pos;
+	}
+
+	// Return the Distance Estimate
+	return 0.5*log(r)*r/dr;
+}
+
+// SDF Tetrahedron Numerical Normals
+vec3 sampleNormal(vec3 pos)
+{
+	const vec2 k = vec2(-1.0, 1.0);
+	return normalize(
+	k.xxx*DE(pos+k.xxx*hitDist)+
+	k.xyy*DE(pos+k.xyy*hitDist)+
+	k.yxy*DE(pos+k.yxy*hitDist)+
+	k.yyx*DE(pos+k.yyx*hitDist));
+}
+
+// Ray-Tracing/Ray-Marching
+float trace(in vec3 ro, in vec3 rd, out vec3 normal)
+{
+	// Set-Up Variables
+	float t = 0.0;
+
+	// Ray-Marching
+	for(uint i = 0U; i < 1024U; i++)
+	{
+		//
+		if(t > 16.0)
+		{
+			return -1.0;
+		}
+
+		//
+		float td = DE(ro+rd*t);
+
+		//
+		if(td < hitDist)
+		{
+			normal = sampleNormal(ro+rd*t);
+			return t;
+		}
+
+		// March the Ray
+		t += td;
+	}
+
+	// No Intersection
+	return -1.0;
+}
+
 // Light Transport
 vec3 radiance(vec3 ro, vec3 rd)
 {
-	return rand3();
+	vec3 normal;
+	float t = trace(ro, rd, normal);
+	if(t < 0.0)
+	{
+		return vec3(1.0);
+	}
+
+	vec3 wo = normalize(nrand3(0.5, normal));
+
+	vec3 normal0;
+	float t0 = trace(ro+rd*(t-hitDist), wo, normal0);
+	if(t0 < 0.0 || t0 > tan(rand()*pi*0.5))
+	{
+		return vec3(1.0);
+	}
+
+	return vec3(atan(t0));
 }
 
 void main()
 {
-	// OK who made this lmao what the heck
+	// OK who made this lmao what the heck, someone please manage threads better
 	/*
 	In order to fit the work into workgroups, some unnecessary threads are launched.
 	We terminate those threads here. 
@@ -109,23 +217,25 @@ void main()
 	}
 
 	vec2 resolution = vec2(WIDTH, HEIGHT);
-	vec2 pixelCoord = vec2(gl_GlobalInvocationID.xy);
+	vec2 pixelCoord = vec2(gl_GlobalInvocationID.x, -gl_GlobalInvocationID.y);
 
 	// Initialize Random Number Generator
-	ns = uint(gl_GlobalInvocationID.x)+uint(gl_GlobalInvocationID.y)*uint(resolution.x);
+	ns = uint(gl_GlobalInvocationID.x)+uint(-gl_GlobalInvocationID.y)*uint(resolution.x);
 
 	// Image UV Coordinates
 	vec2 uv = 2.0*(pixelCoord.xy-0.5*resolution.xy)/max(resolution.x, resolution.y);
 
 	// Set-Up Camera
-	const float camfov = 1.0;
-
 	const vec3 ro = vec3(0.0, 0.0, 2.0);
 	const mat3 rotmat = mat3(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
 	vec3 rd = normalize(vec3(camfov*uv, -1.0)*rotmat);
 
 	// Render the Sample
 	vec3 color = radiance(ro, rd);
+
+	// HDR Tonemapping
+	//color = clamp(1.0-exp(-max(color, 0.0)*exposure), 0.0, 1.0);
+	color = pow(clamp(color, 0.0, 1.0), vec3(1.0/2.2));
 
 	// Output the Rendered Sample
 	imageData[WIDTH*gl_GlobalInvocationID.y+gl_GlobalInvocationID.x].value = vec4(color, 1.0);
