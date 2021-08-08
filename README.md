@@ -1,3 +1,3 @@
-# Path-Tracing Renderer
+# Path-Tracing Renderer (CPU Branch)
 
-This repository contains the source code for The Order of the Simulation community Path-Tracing Renderer.
+This branch is for CPU-only code of The Order of the Simulation community Path-Tracing Renderer.
