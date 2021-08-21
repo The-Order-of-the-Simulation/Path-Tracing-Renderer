@@ -6,6 +6,7 @@ out
 
 # IDE Folders
 .vs
+.vscode
 
-# Windows 10 File System
+# Windows File System
 desktop.ini
