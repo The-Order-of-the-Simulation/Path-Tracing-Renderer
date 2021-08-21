@@ -18,7 +18,7 @@ inline vec3 skyColor(vec3 rd)
 	// Light Source
 	if(dot3(float3(0.0F, 1.0F, 0.0F), rd) > 0.8F)
 	{
-		return float3f(10.0F);
+		return float3(2.0F, 10.0F, 2.0F);
 	}
 
 	float x = max(dot3(float3(0.0F, 1.0F, 0.0F), rd), 0.0F)+(max(dot3(float3(0.0F, -1.0F, 0.0F), rd), 0.0F)*0.05F);
@@ -154,7 +154,7 @@ inline vec3 radiance(vec3 ro, vec3 rd)
 		}
 
 		rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin-0.001F));
-		attenuation = multiply_vec3(attenuation, float3(0.800F, 0.800F, 0.800F));
+		attenuation = multiply_vec3(attenuation, float3(0.200F, 0.200F, 0.800F));
 		rd = normalize3(reflect3(rd, normalize3(nrand3(0.5F, t.normal))));
 	}
 
@@ -164,6 +164,7 @@ inline vec3 radiance(vec3 ro, vec3 rd)
 
 void renderImage(vec3 *imageBuffer)
 {
+	#pragma omp parallel for
 	for(int x = 0; x < IMAGE_SIZE_X; x++) {
 	for(int y = 0; y < IMAGE_SIZE_Y; y++) {
 		vec3 *pixelColor = &imageBuffer[x+(y*IMAGE_SIZE_X)];

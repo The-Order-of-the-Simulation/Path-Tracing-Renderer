@@ -8,7 +8,7 @@
 #define SPP 128
 
 // Maximum Light Bounces
-#define MAX_BOUNCES 8
+#define MAX_BOUNCES 16
 
 // Tonemap Exposure
 #define TONEMAP_EXPOSURE 1.0F
