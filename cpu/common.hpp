@@ -455,6 +455,7 @@ inline vec4 rand4()
 }
 
 // Random Uniform Direction
+
 inline vec2 udir2()
 {
 	float z = randomFloat();
@@ -471,24 +472,27 @@ inline vec3 udir3()
 	return float3(c.x*s.y, s.x*s.y, c.y);
 }
 
+/* [insert udir4() here] */
+
 // See michael0884's usage of PCG Random
 // https://www.shadertoy.com/view/wltcRS
 // https://www.shadertoy.com/view/WttyWX
 
 // Normalized Random Vectors (Gaussian Distribution)
-vec2 nrand2(float sigma, vec2 mean)
+
+inline vec2 nrand2(float sigma, vec2 mean)
 {
 	vec2 z = rand2();
 	return add_vec2(multiply_vec2f(float2(cosf(2.0F*pi*z.y), sinf(2.0F*pi*z.y)), sigma*sqrtf(-2.0F*logf(z.x))), mean);
 }
 
-vec3 nrand3(float sigma, vec3 mean)
+inline vec3 nrand3(float sigma, vec3 mean)
 {
 	vec4 z = rand4();
 	return add_vec3(multiply_vec3f(multiply_vec3(sqrt3(multiply_vec3f(log3(float3(z.x, z.x, z.y     )), -2.0F)), float3(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w))), sigma), mean);
 }
 
-vec4 nrand4(float sigma, vec4 mean)
+inline vec4 nrand4(float sigma, vec4 mean)
 {
 	vec4 z = rand4();
 	return add_vec4(multiply_vec4f(multiply_vec4(sqrt4(multiply_vec4f(log4(float4(z.x, z.x, z.y, z.y)), -2.0F)), float4(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w), sinf(2.0F*pi*z.w))), sigma), mean);
@@ -497,16 +501,16 @@ vec4 nrand4(float sigma, vec4 mean)
 // ##### Other Functions #####
 
 // HDR Exposure Tonemap
-vec3 tonemap(vec3 color, float exposure)
+inline vec3 tonemap(vec3 color, float exposure)
 {
 	color = multiply_vec3f(color, exposure);
 
 	// Tonemap and Output Color
-	return subtract_vec3(float3f(1.0F), exp3(float3(-color.x, -color.y, -color.z)));
+	return subtract_vec3(float3f(1.0F), exp3(negate3(color)));
 }
 
 // Blackman-Harris Pixel Filter
-vec2 pixelFilter(vec2 pixelCoord)
+inline vec2 pixelFilter(vec2 pixelCoord)
 {
 	// https://en.wikipedia.org/wiki/Window_function#Blackman–Harris_window
 	// w[n] = a0-a1*cos(2*pi*n/N)+a2*cos(4*pi*n/N)-a3*cos(6*pi*n/N)

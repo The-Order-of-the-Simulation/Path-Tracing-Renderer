@@ -1,8 +1,8 @@
 // ##### Render Parameters #####
 
 // Image Resolution
-#define IMAGE_SIZE_X 640
-#define IMAGE_SIZE_Y 360
+#define IMAGE_SIZE_X 512
+#define IMAGE_SIZE_Y 384
 
 // Samples per Pixel
 #define SPP 128
