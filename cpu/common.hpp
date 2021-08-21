@@ -346,6 +346,12 @@ inline vec4 exp4(vec4 vector)
 	return float4(expf(vector.x), expf(vector.y), expf(vector.z), expf(vector.w));
 }
 
+// https://asawicki.info/news_1301_reflect_and_refract_functions.html
+inline vec3 reflect3(vec3 vector, vec3 normal)
+{
+	return subtract_vec3(vector, multiply_vec3f(normal, 2.0F*dot3(vector, normal)));
+}
+
 // ##### Intersection Functions #####
 
 // A lot of these came from Inigo Quilez:

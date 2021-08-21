@@ -12,9 +12,9 @@
 
 #include "lodepng.h" //Used for png encoding.
 
-const int WIDTH = 1920; // Size of rendered mandelbrot set.
-const int HEIGHT = 1080; // Size of renderered mandelbrot set.
-const int WORKGROUP_SIZE = 32; // Workgroup size in compute shader.
+const int WIDTH = 640; // Size of rendered mandelbrot set.
+const int HEIGHT = 360; // Size of renderered mandelbrot set.
+const int WORKGROUP_SIZE = 128; // Workgroup size in compute shader.
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
