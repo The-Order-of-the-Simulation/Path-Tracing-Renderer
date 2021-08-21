@@ -7,23 +7,8 @@ using namespace std;
 // Include Common Header
 #include "common.hpp"
 
-// ##### Parameters #####
-
-// Image Resolution
-#define IMAGE_SIZE_X 320
-#define IMAGE_SIZE_Y 240
-
-// Samples per Pixel
-#define SPP 128
-
-// Maximum Light Bounces
-#define MAX_BOUNCES 16
-
-// Tonemap Exposure
-#define TONEMAP_EXPOSURE 1.0F
-
-// Camera Field of View
-#define CAMERA_FOV 1.0F
+// Include Config Header
+#include "config.hpp"
 
 // ##### Rendering #####
 
@@ -70,12 +55,14 @@ inline intersection trace(vec3 ro, vec3 rd)
 
 	for(int i = 0; i < 8; i++)
 	{
+		// Calculate Sphere Position
 		vec3 spherePosition;
 		seed = triple32(seed); spherePosition.x = float(seed)/float(0xFFFFFFFFU);
 		seed = triple32(seed); spherePosition.y = float(seed)/float(0xFFFFFFFFU);
 		seed = triple32(seed); spherePosition.z = float(seed)/float(0xFFFFFFFFU);
 		spherePosition = multiply_vec3f(subtract_vec3f(spherePosition, 0.5F), 2.0F);
 
+		// Calculate Intersection
 		intersection t0 = sphere(ro, rd, spherePosition, 0.5F);
 		t = process_hit(t, t0);
 	}
@@ -135,6 +122,7 @@ void renderImage(vec3 *imageBuffer)
 			}
 		}
 
+		// Calculate the Accumulated Radiance
 		*pixelColor = accumulation != 0 ? divide_vec3f(*pixelColor, float(accumulation)) : float3f(0.0F);
 
 		// HDR Exposure Tonemap

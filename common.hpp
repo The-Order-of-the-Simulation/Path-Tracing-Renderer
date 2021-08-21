@@ -55,6 +55,16 @@ inline vec3 float3(float x, float y, float z)
 	return vector;
 }
 
+inline vec4 float4(float x, float y, float z, float w)
+{
+	vec4 vector;
+	vector.x = x;
+	vector.y = y;
+	vector.z = z;
+	vector.w = w;
+	return vector;
+}
+
 inline vec2 float2f(float x)
 {
 	return float2(x, x);
@@ -63,6 +73,11 @@ inline vec2 float2f(float x)
 inline vec3 float3f(float x)
 {
 	return float3(x, x, x);
+}
+
+inline vec4 float4f(float x)
+{
+	return float4(x, x, x, x);
 }
 
 // ##### Vector Math #####
@@ -87,6 +102,16 @@ inline vec3 add_vec3f(vec3 vector, float x)
 	return float3(vector.x+x, vector.y+x, vector.z+x);
 }
 
+inline vec4 add_vec4(vec4 vector0, vec4 vector1)
+{
+	return float4(vector0.x+vector1.x, vector0.y+vector1.y, vector0.z+vector1.z, vector0.w+vector1.w);
+}
+
+inline vec4 add_vec4f(vec4 vector, float x)
+{
+	return float4(vector.x+x, vector.y+x, vector.z+x, vector.w+x);
+}
+
 inline vec2 subtract_vec2(vec2 vector0, vec2 vector1)
 {
 	return float2(vector0.x-vector1.x, vector0.y-vector1.y);
@@ -105,6 +130,16 @@ inline vec3 subtract_vec3(vec3 vector0, vec3 vector1)
 inline vec3 subtract_vec3f(vec3 vector, float x)
 {
 	return float3(vector.x-x, vector.y-x, vector.z-x);
+}
+
+inline vec4 subtract_vec4(vec4 vector0, vec4 vector1)
+{
+	return float4(vector0.x-vector1.x, vector0.y-vector1.y, vector0.z-vector1.z, vector0.w-vector1.w);
+}
+
+inline vec4 subtract_vec4f(vec4 vector, float x)
+{
+	return float4(vector.x-x, vector.y-x, vector.z-x, vector.w-x);
 }
 
 inline vec2 multiply_vec2(vec2 vector0, vec2 vector1)
@@ -127,6 +162,16 @@ inline vec3 multiply_vec3f(vec3 vector, float x)
 	return float3(vector.x*x, vector.y*x, vector.z*x);
 }
 
+inline vec4 multiply_vec4(vec4 vector0, vec4 vector1)
+{
+	return float4(vector0.x*vector1.x, vector0.y*vector1.y, vector0.z*vector1.z, vector0.w*vector1.w);
+}
+
+inline vec4 multiply_vec4f(vec4 vector, float x)
+{
+	return float4(vector.x*x, vector.y*x, vector.z*x, vector.w*x);
+}
+
 inline vec2 divide_vec2(vec2 vector0, vec2 vector1)
 {
 	return float2(vector0.x/vector1.x, vector0.y/vector1.y);
@@ -147,6 +192,31 @@ inline vec3 divide_vec3f(vec3 vector, float x)
 	return float3(vector.x/x, vector.y/x, vector.z/x);
 }
 
+inline vec4 divide_vec4(vec4 vector0, vec4 vector1)
+{
+	return float4(vector0.x/vector1.x, vector0.y/vector1.y, vector0.z/vector1.z, vector0.w/vector1.w);
+}
+
+inline vec4 divide_vec4f(vec4 vector, float x)
+{
+	return float4(vector.x/x, vector.y/x, vector.z/x, vector.w/x);
+}
+
+inline vec2 negate2(vec2 vector)
+{
+	return float2(-vector.x, -vector.y);
+}
+
+inline vec3 negate3(vec3 vector)
+{
+	return float3(-vector.x, -vector.y, -vector.z);
+}
+
+inline vec4 negate4(vec4 vector)
+{
+	return float4(-vector.x, -vector.y, -vector.z, -vector.w);
+}
+
 inline float dot2(vec2 vector0, vec2 vector1)
 {
 	return (vector0.x*vector1.x)+(vector0.y*vector1.y);
@@ -155,6 +225,20 @@ inline float dot2(vec2 vector0, vec2 vector1)
 inline float dot3(vec3 vector0, vec3 vector1)
 {
 	return (vector0.x*vector1.x)+(vector0.y*vector1.y)+(vector0.z*vector1.z);
+}
+
+inline float dot4(vec4 vector0, vec4 vector1)
+{
+	return (vector0.x*vector1.x)+(vector0.y*vector1.y)+(vector0.z*vector1.z)+(vector0.w*vector1.w);
+}
+
+// Cross Product
+vec3 cross3(vec3 vector0, vec3 vector1)
+{
+	return float3(
+	(vector0.y*vector1.z)-(vector1.y*vector0.z),
+	(vector0.z*vector1.x)-(vector1.z*vector0.x),
+	(vector0.x*vector1.y)-(vector1.x*vector0.y));
 }
 
 inline float length2(vec2 vector)
@@ -167,6 +251,11 @@ inline float length3(vec3 vector)
 	return sqrtf(dot3(vector, vector));
 }
 
+inline float length4(vec4 vector)
+{
+	return sqrtf(dot4(vector, vector));
+}
+
 inline vec2 normalize2(vec2 vector)
 {
 	return divide_vec2(vector, float2f(length2(vector)));
@@ -175,6 +264,11 @@ inline vec2 normalize2(vec2 vector)
 inline vec3 normalize3(vec3 vector)
 {
 	return divide_vec3(vector, float3f(length3(vector)));
+}
+
+inline vec4 normalize4(vec4 vector)
+{
+	return divide_vec4(vector, float4f(length4(vector)));
 }
 
 inline vec2 sin2(vec2 vector)
@@ -187,6 +281,11 @@ inline vec3 sin3(vec3 vector)
 	return float3(sinf(vector.x), sinf(vector.y), sinf(vector.z));
 }
 
+inline vec4 sin4(vec4 vector)
+{
+	return float4(sinf(vector.x), sinf(vector.y), sinf(vector.z), sinf(vector.w));
+}
+
 inline vec2 cos2(vec2 vector)
 {
 	return float2(cosf(vector.x), cosf(vector.y));
@@ -195,6 +294,11 @@ inline vec2 cos2(vec2 vector)
 inline vec3 cos3(vec3 vector)
 {
 	return float3(cosf(vector.x), cosf(vector.y), cosf(vector.z));
+}
+
+inline vec4 cos4(vec4 vector)
+{
+	return float4(cosf(vector.x), cosf(vector.y), cosf(vector.z), cosf(vector.w));
 }
 
 inline vec2 sqrt2(vec2 vector)
@@ -207,6 +311,11 @@ inline vec3 sqrt3(vec3 vector)
 	return float3(sqrtf(vector.x), sqrtf(vector.y), sqrtf(vector.z));
 }
 
+inline vec4 sqrt4(vec4 vector)
+{
+	return float4(sqrtf(vector.x), sqrtf(vector.y), sqrtf(vector.z), sqrtf(vector.w));
+}
+
 inline vec2 log2(vec2 vector)
 {
 	return float2(logf(vector.x), logf(vector.y));
@@ -215,6 +324,11 @@ inline vec2 log2(vec2 vector)
 inline vec3 log3(vec3 vector)
 {
 	return float3(logf(vector.x), logf(vector.y), logf(vector.z));
+}
+
+inline vec4 log4(vec4 vector)
+{
+	return float4(logf(vector.x), logf(vector.y), logf(vector.z), logf(vector.w));
 }
 
 inline vec2 exp2(vec2 vector)
@@ -227,7 +341,15 @@ inline vec3 exp3(vec3 vector)
 	return float3(expf(vector.x), expf(vector.y), expf(vector.z));
 }
 
+inline vec4 exp4(vec4 vector)
+{
+	return float4(expf(vector.x), expf(vector.y), expf(vector.z), expf(vector.w));
+}
+
 // ##### Intersection Functions #####
+
+// A lot of these came from Inigo Quilez:
+// https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
 
 // Sphere Intersection Function
 intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
@@ -255,6 +377,25 @@ intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
 	t.normal = normalize3(subtract_vec3(add_vec3(ro, multiply_vec3f(rd, t.tMin)), sphPos));
 
 	return t;
+}
+
+// Triangle Intersection Function
+vec3 triIntersect(vec3 ro, vec3 rd, vec3 v0, vec3 v1, vec3 v2 )
+{
+	vec3 v1v0 = subtract_vec3(v1, v0);
+	vec3 v2v0 = subtract_vec3(v2, v0);
+	vec3 rov0 = subtract_vec3(ro, v0);
+	vec3  n = cross3(v1v0, v2v0);
+	vec3  q = cross3(rov0, rd  );
+	float d = 1.0F/dot3(rd, n);
+	float u = d*dot3(negate3(q), v2v0);
+	float v = d*dot3(        q , v1v0);
+	float t = d*dot3(negate3(n), rov0);
+	if(u < 0.0F || u > 1.0F || v < 0.0F || (u+v) > 1.0F )
+	{
+		t = -1.0F;
+	}
+	return float3(t, u, v);
 }
 
 // ##### Random Number Generator #####
@@ -335,28 +476,23 @@ inline vec3 udir3()
 // https://www.shadertoy.com/view/WttyWX
 
 // Normalized Random Vectors (Gaussian Distribution)
-vec3 nrand3(float sigma, vec3 mean)
-{
-	vec4 z = rand4();
-	return add_vec3(multiply_vec3f(multiply_vec3(sqrt3(multiply_vec3f(log3(float3(z.x, z.x, z.y)), -2.0F)), float3(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w))), sigma), mean);
-}
-
-/*
-
-
-// Normalized Random Vectors (Gaussian Distribution)
 vec2 nrand2(float sigma, vec2 mean)
 {
 	vec2 z = rand2();
-	return mean+sigma*sqrt(-2.0*log(z.x   ))*vec2(cos(2.0*pi*z.y), sin(2.0*pi*z.y));
+	return add_vec2(multiply_vec2f(float2(cosf(2.0F*pi*z.y), sinf(2.0F*pi*z.y)), sigma*sqrtf(-2.0F*logf(z.x))), mean);
+}
+
+vec3 nrand3(float sigma, vec3 mean)
+{
+	vec4 z = rand4();
+	return add_vec3(multiply_vec3f(multiply_vec3(sqrt3(multiply_vec3f(log3(float3(z.x, z.x, z.y     )), -2.0F)), float3(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w))), sigma), mean);
 }
 
 vec4 nrand4(float sigma, vec4 mean)
 {
 	vec4 z = rand4();
-	return mean+sigma*sqrt(-2.0*log(z.xxyy))*vec4(cos(2.0*pi*z.z), sin(2.0*pi*z.z), cos(2.0*pi*z.w), sin(2.0*pi*z.w));
+	return add_vec4(multiply_vec4f(multiply_vec4(sqrt4(multiply_vec4f(log4(float4(z.x, z.x, z.y, z.y)), -2.0F)), float4(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w), sinf(2.0F*pi*z.w))), sigma), mean);
 }
-*/
 
 // ##### Other Functions #####
 
