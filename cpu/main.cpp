@@ -2,6 +2,7 @@
 using namespace std;
 
 #include <chrono>
+#include <cmath>
 #include <thread>
 #include <fstream>
 
@@ -236,10 +237,10 @@ int main()
 	// Start Execution Timer
 	auto start = chrono::high_resolution_clock::now();
 
-	// renderImage(imageBuffer);
+	renderImage(imageBuffer);
 
-	thread thread0(renderImage, imageBuffer);
-	thread0.join();
+	//thread thread0(renderImage, imageBuffer);
+	//thread0.join();
 
 	// Stop Execution Timer
 	auto stop = chrono::high_resolution_clock::now();
