@@ -14,7 +14,7 @@ using namespace std;
 #define IMAGE_SIZE_Y 240
 
 // Samples per Pixel
-#define SPP 512
+#define SPP 128
 
 // Maximum Light Bounces
 #define MAX_BOUNCES 16
@@ -97,7 +97,7 @@ inline vec3 radiance(vec3 ro, vec3 rd)
 		}
 
 		rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin-0.001F));
-		attenuation = multiply_vec3(attenuation, float3f(0.8F));
+		attenuation = multiply_vec3(attenuation, float3(0.800F, 0.800F, 0.800F));
 		rd = normalize3(nrand3(0.5F, t.normal));
 	}
 
@@ -105,13 +105,11 @@ inline vec3 radiance(vec3 ro, vec3 rd)
 	return float3f(-1.0F);
 }
 
-void render()
+void renderImage(vec3 *imageBuffer)
 {
-	vec3 imageBuffer[IMAGE_SIZE_X*IMAGE_SIZE_Y];
-
 	for(int x = 0; x < IMAGE_SIZE_X; x++) {
 	for(int y = 0; y < IMAGE_SIZE_Y; y++) {
-		vec3 pixelColor = float3f(0.0F);
+		vec3 *pixelColor = &imageBuffer[x+(y*IMAGE_SIZE_X)];
 		int accumulation = 0;
 
 		// Initialize Random Number Generator
@@ -132,19 +130,41 @@ void render()
 
 			if(!expired)
 			{
-				pixelColor = add_vec3(pixelColor, color);
+				*pixelColor = add_vec3(*pixelColor, color);
 				accumulation++;
 			}
 		}
 
-		pixelColor = accumulation != 0 ? divide_vec3f(pixelColor, float(accumulation)) : float3f(0.0F);
+		*pixelColor = accumulation != 0 ? divide_vec3f(*pixelColor, float(accumulation)) : float3f(0.0F);
 
 		// HDR Exposure Tonemap
-		pixelColor = tonemap(pixelColor, TONEMAP_EXPOSURE);
+		*pixelColor = tonemap(*pixelColor, TONEMAP_EXPOSURE);
+	}
+	}
+}
 
-		imageBuffer[x+(y*IMAGE_SIZE_X)] = pixelColor;
+int main()
+{
+	// Detect Number of Hardware Threads
+	int n_threads = thread::hardware_concurrency();
+
+	if(n_threads < 1)
+	{
+		std::cout << "Critical Error: hardware_concurrency reports " << n_threads << " threads!" << std::endl;
+		std::cout << "Please make sure your system supports std::thread. Exiting..." << std::endl;
+		return EXIT_FAILURE;
 	}
-	}
+
+	std::cout << "This machine reports having " << n_threads << " hardware threads" << std::endl;
+
+	std::cout << "Starting Render..." << std::endl;
+
+	vec3 *imageBuffer;
+	imageBuffer = (vec3*)malloc(sizeof(vec3)*IMAGE_SIZE_X*IMAGE_SIZE_Y);
+
+	thread thread0(renderImage, imageBuffer);
+
+	thread0.join();
 
 	std::cout << "Saving render to render.ppm..." << std::endl;
 
@@ -168,27 +188,8 @@ void render()
 	imageFile << "# Rendered with OpenPT";
 
 	imageFile.close();
-}
 
-int main()
-{
-	// Detect Number of Hardware Threads
-	int n_threads = thread::hardware_concurrency();
-
-	if(n_threads < 1)
-	{
-		std::cout << "Critical Error: hardware_concurrency reports " << n_threads << " threads!" << std::endl;
-		std::cout << "Please make sure your system supports std::thread. Exiting..." << std::endl;
-		return EXIT_FAILURE;
-	}
-
-	std::cout << "This machine reports having " << n_threads << " hardware threads" << std::endl;
-
-	std::cout << "Starting Render..." << std::endl;
-
-	thread thread0(render);
-
-	thread0.join();
+	free(imageBuffer);
 
 	std::cout << "Done!" << std::endl;
 
