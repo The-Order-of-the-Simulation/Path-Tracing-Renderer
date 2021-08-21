@@ -12,9 +12,9 @@
 
 #include "lodepng.h" //Used for png encoding.
 
-const int WIDTH = 640; // Size of rendered mandelbrot set.
-const int HEIGHT = 360; // Size of renderered mandelbrot set.
-const int WORKGROUP_SIZE = 128; // Workgroup size in compute shader.
+const int WIDTH = 640; // Size of render
+const int HEIGHT = 360; // Size of render
+const int WORKGROUP_SIZE = 32; // Workgroup size in compute shader
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -34,13 +34,13 @@ const bool enableValidationLayers = true;
 }
 
 /*
-The application launches a compute shader that renders the mandelbrot set,
+The application launches a compute shader that renders the scene,
 by rendering it into a storage buffer.
 The storage buffer is then read from the GPU, and saved as .png
 */
 class ComputeApplication {
 private:
-	// The pixels of the rendered mandelbrot set are in this format:
+	// The pixels of the render are in this format:
 	struct Pixel {
 		float r, g, b, a;
 	};
@@ -92,7 +92,7 @@ private:
 	VkDescriptorSetLayout descriptorSetLayout;
 
 	/*
-	The mandelbrot set will be rendered to this buffer.
+	The scene will be rendered to this buffer
 
 	The memory that backs the buffer is bufferMemory.
 	*/
@@ -126,7 +126,7 @@ private:
 public:
 	void run()
 	{
-		// Buffer size of the storage buffer that will contain the rendered mandelbrot set.
+		// Buffer size of the storage buffer that will contain the render
 		bufferSize = sizeof(Pixel)*WIDTH*HEIGHT;
 
 		// Output "Initializing Vulkan" to Console
@@ -151,7 +151,7 @@ public:
 		// Output "Saving Render" to Console
 		std::cout << "Saving Render" << std::endl;
 
-		// The former command rendered a mandelbrot set to a buffer.
+		// The former command rendered the scene to a buffer.
 		// Save that buffer as a png on disk.
 		saveRenderedImage();
 
@@ -184,7 +184,7 @@ public:
 		vkUnmapMemory(device, bufferMemory);
 
 		// Now we save the acquired color data to a .png
-		unsigned error = lodepng::encode("mandelbrot.png", image, WIDTH, HEIGHT);
+		unsigned error = lodepng::encode("render.png", image, WIDTH, HEIGHT);
 		if(error)
 		{
 			//printf("encoder error %d: %s", error, lodepng_error_text(error));
@@ -480,7 +480,7 @@ public:
 	void createBuffer()
 	{
 		/*
-		We will now create a buffer. We will render the mandelbrot set into this buffer
+		We will now create a buffer. We will render the scene into this buffer
 		in a computer shade later. 
 		*/
 		
