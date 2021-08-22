@@ -8,7 +8,7 @@ typedef struct {
 	float w;
 } vec4;
 
-inline vec4 float4(float x, float y, float z, float w)
+vec4 float4(float x, float y, float z, float w)
 {
 	vec4 vector;
 	vector.x = x;
@@ -18,92 +18,152 @@ inline vec4 float4(float x, float y, float z, float w)
 	return vector;
 }
 
-inline vec4 float4f(float x)
+vec4 float4f(float x)
 {
 	return float4(x, x, x, x);
 }
 
-inline vec4 add_vec4(vec4 vector0, vec4 vector1)
+vec4 add_vec4(vec4 vector0, vec4 vector1)
 {
-	return float4(vector0.x+vector1.x, vector0.y+vector1.y, vector0.z+vector1.z, vector0.w+vector1.w);
+	vector0.x += vector1.x;
+	vector0.y += vector1.y;
+	vector0.z += vector1.z;
+	vector0.w += vector1.w;
+	return vector0;
 }
 
-inline vec4 add_vec4f(vec4 vector, float x)
+vec4 add_vec4f(vec4 vector, float x)
 {
-	return float4(vector.x+x, vector.y+x, vector.z+x, vector.w+x);
+	vector.x += x;
+	vector.y += x;
+	vector.z += x;
+	vector.w += x;
+	return vector;
 }
 
-inline vec4 subtract_vec4(vec4 vector0, vec4 vector1)
+vec4 subtract_vec4(vec4 vector0, vec4 vector1)
 {
-	return float4(vector0.x-vector1.x, vector0.y-vector1.y, vector0.z-vector1.z, vector0.w-vector1.w);
+	vector0.x -= vector1.x;
+	vector0.y -= vector1.y;
+	vector0.z -= vector1.z;
+	vector0.w -= vector1.w;
+	return vector0;
 }
 
-inline vec4 subtract_vec4f(vec4 vector, float x)
+vec4 subtract_vec4f(vec4 vector, float x)
 {
-	return float4(vector.x-x, vector.y-x, vector.z-x, vector.w-x);
+	vector.x -= x;
+	vector.y -= x;
+	vector.z -= x;
+	vector.w -= x;
+	return vector;
 }
 
-inline vec4 multiply_vec4(vec4 vector0, vec4 vector1)
+vec4 multiply_vec4(vec4 vector0, vec4 vector1)
 {
-	return float4(vector0.x*vector1.x, vector0.y*vector1.y, vector0.z*vector1.z, vector0.w*vector1.w);
+	vector0.x *= vector1.x;
+	vector0.y *= vector1.y;
+	vector0.z *= vector1.z;
+	vector0.w *= vector1.w;
+	return vector0;
 }
 
-inline vec4 multiply_vec4f(vec4 vector, float x)
+vec4 multiply_vec4f(vec4 vector, float x)
 {
-	return float4(vector.x*x, vector.y*x, vector.z*x, vector.w*x);
+	vector.x *= x;
+	vector.y *= x;
+	vector.z *= x;
+	vector.w *= x;
+	return vector;
 }
 
-inline vec4 divide_vec4(vec4 vector0, vec4 vector1)
+vec4 divide_vec4(vec4 vector0, vec4 vector1)
 {
-	return float4(vector0.x/vector1.x, vector0.y/vector1.y, vector0.z/vector1.z, vector0.w/vector1.w);
+	vector0.x /= vector1.x;
+	vector0.y /= vector1.y;
+	vector0.z /= vector1.z;
+	vector0.w /= vector1.w;
+	return vector0;
 }
 
-inline vec4 divide_vec4f(vec4 vector, float x)
+vec4 divide_vec4f(vec4 vector, float x)
 {
-	return float4(vector.x/x, vector.y/x, vector.z/x, vector.w/x);
+	vector.x /= x;
+	vector.y /= x;
+	vector.z /= x;
+	vector.w /= x;
+	return vector;
 }
 
-inline vec4 negate4(vec4 vector)
+vec4 negate4(vec4 vector)
 {
 	return float4(-vector.x, -vector.y, -vector.z, -vector.w);
 }
 
-inline float dot4(vec4 vector0, vec4 vector1)
+float dot4(vec4 vector0, vec4 vector1)
 {
-	return (vector0.x*vector1.x)+(vector0.y*vector1.y)+(vector0.z*vector1.z)+(vector0.w*vector1.w);
+	vector0.x *= vector1.x;
+	vector0.y *= vector1.y;
+	vector0.z *= vector1.z;
+	vector0.w *= vector1.w;
+	return vector0.x+vector0.y+vector0.z+vector0.w;
 }
 
-inline float length4(vec4 vector)
+float length4(vec4 vector)
 {
-	return sqrtf(dot4(vector, vector));
+	vector.x *= vector.x;
+	vector.y *= vector.y;
+	vector.z *= vector.z;
+	vector.w *= vector.w;
+	return sqrtf(vector.x+vector.y+vector.z+vector.w);
 }
 
-inline vec4 normalize4(vec4 vector)
+vec4 normalize4(vec4 vector)
 {
-	return divide_vec4(vector, float4f(length4(vector)));
+	return divide_vec4f(vector, length4(vector));
 }
 
-inline vec4 sin4(vec4 vector)
+vec4 sin4(vec4 vector)
 {
-	return float4(sinf(vector.x), sinf(vector.y), sinf(vector.z), sinf(vector.w));
+	vector.x = sinf(vector.x);
+	vector.y = sinf(vector.y);
+	vector.z = sinf(vector.z);
+	vector.w = sinf(vector.w);
+	return vector;
 }
 
-inline vec4 cos4(vec4 vector)
+vec4 cos4(vec4 vector)
 {
-	return float4(cosf(vector.x), cosf(vector.y), cosf(vector.z), cosf(vector.w));
+	vector.x = cosf(vector.x);
+	vector.y = cosf(vector.y);
+	vector.z = cosf(vector.z);
+	vector.w = cosf(vector.w);
+	return vector;
 }
 
-inline vec4 sqrt4(vec4 vector)
+vec4 sqrt4(vec4 vector)
 {
-	return float4(sqrtf(vector.x), sqrtf(vector.y), sqrtf(vector.z), sqrtf(vector.w));
+	vector.x = sqrtf(vector.x);
+	vector.y = sqrtf(vector.y);
+	vector.z = sqrtf(vector.z);
+	vector.w = sqrtf(vector.w);
+	return vector;
 }
 
-inline vec4 log4(vec4 vector)
+vec4 log4(vec4 vector)
 {
-	return float4(logf(vector.x), logf(vector.y), logf(vector.z), logf(vector.w));
+	vector.x = logf(vector.x);
+	vector.y = logf(vector.y);
+	vector.z = logf(vector.z);
+	vector.w = logf(vector.w);
+	return vector;
 }
 
-inline vec4 exp4(vec4 vector)
+vec4 exp4(vec4 vector)
 {
-	return float4(expf(vector.x), expf(vector.y), expf(vector.z), expf(vector.w));
+	vector.x = expf(vector.x);
+	vector.y = expf(vector.y);
+	vector.z = expf(vector.z);
+	vector.w = expf(vector.w);
+	return vector;
 }

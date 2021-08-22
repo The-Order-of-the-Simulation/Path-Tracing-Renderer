@@ -6,7 +6,7 @@ typedef struct {
 	float y;
 } vec2;
 
-inline vec2 float2(float x, float y)
+vec2 float2(float x, float y)
 {
 	vec2 vector;
 	vector.x = x;
@@ -14,92 +14,122 @@ inline vec2 float2(float x, float y)
 	return vector;
 }
 
-inline vec2 float2f(float x)
+vec2 float2f(float x)
 {
 	return float2(x, x);
 }
 
-inline vec2 add_vec2(vec2 vector0, vec2 vector1)
+vec2 add_vec2(vec2 vector0, vec2 vector1)
 {
-	return float2(vector0.x+vector1.x, vector0.y+vector1.y);
+	vector0.x += vector1.x;
+	vector0.y += vector1.y;
+	return vector0;
 }
 
-inline vec2 add_vec2f(vec2 vector, float x)
+vec2 add_vec2f(vec2 vector, float x)
 {
-	return float2(vector.x+x, vector.y+x);
+	vector.x += x;
+	vector.y += x;
+	return vector;
 }
 
-inline vec2 subtract_vec2(vec2 vector0, vec2 vector1)
+vec2 subtract_vec2(vec2 vector0, vec2 vector1)
 {
-	return float2(vector0.x-vector1.x, vector0.y-vector1.y);
+	vector0.x -= vector1.x;
+	vector0.y -= vector1.y;
+	return vector0;
 }
 
-inline vec2 subtract_vec2f(vec2 vector, float x)
+vec2 subtract_vec2f(vec2 vector, float x)
 {
-	return float2(vector.x-x, vector.y-x);
+	vector.x -= x;
+	vector.y -= x;
+	return vector;
 }
 
-inline vec2 multiply_vec2(vec2 vector0, vec2 vector1)
+vec2 multiply_vec2(vec2 vector0, vec2 vector1)
 {
-	return float2(vector0.x*vector1.x, vector0.y*vector1.y);
+	vector0.x *= vector1.x;
+	vector0.y *= vector1.y;
+	return vector0;
 }
 
-inline vec2 multiply_vec2f(vec2 vector, float x)
+vec2 multiply_vec2f(vec2 vector, float x)
 {
-	return float2(vector.x*x, vector.y*x);
+	vector.x *= x;
+	vector.y *= x;
+	return vector;
 }
 
-inline vec2 divide_vec2(vec2 vector0, vec2 vector1)
+vec2 divide_vec2(vec2 vector0, vec2 vector1)
 {
-	return float2(vector0.x/vector1.x, vector0.y/vector1.y);
+	vector0.x /= vector1.x;
+	vector0.y /= vector1.y;
+	return vector0;
 }
 
-inline vec2 divide_vec2f(vec2 vector, float x)
+vec2 divide_vec2f(vec2 vector, float x)
 {
-	return float2(vector.x/x, vector.y/x);
+	vector.x /= x;
+	vector.y /= x;
+	return vector;
 }
 
-inline vec2 negate2(vec2 vector)
+vec2 negate2(vec2 vector)
 {
 	return float2(-vector.x, -vector.y);
 }
 
-inline float dot2(vec2 vector0, vec2 vector1)
+float dot2(vec2 vector0, vec2 vector1)
 {
-	return (vector0.x*vector1.x)+(vector0.y*vector1.y);
+	vector0.x *= vector1.x;
+	vector0.y *= vector1.y;
+	return vector0.x+vector0.y;
 }
 
-inline float length2(vec2 vector)
+float length2(vec2 vector)
 {
-	return sqrtf(dot2(vector, vector));
+	vector.x *= vector.x;
+	vector.y *= vector.y;
+	return sqrtf(vector.x+vector.y);
 }
 
-inline vec2 normalize2(vec2 vector)
+vec2 normalize2(vec2 vector)
 {
-	return divide_vec2(vector, float2f(length2(vector)));
+	return divide_vec2f(vector, length2(vector));
 }
 
-inline vec2 sin2(vec2 vector)
+vec2 sin2(vec2 vector)
 {
-	return float2(sinf(vector.x), sinf(vector.y));
+	vector.x = sinf(vector.x);
+	vector.y = sinf(vector.y);
+	return vector;
 }
 
-inline vec2 cos2(vec2 vector)
+vec2 cos2(vec2 vector)
 {
-	return float2(cosf(vector.x), cosf(vector.y));
+	vector.x = cosf(vector.x);
+	vector.y = cosf(vector.y);
+	return vector;
 }
 
-inline vec2 sqrt2(vec2 vector)
+vec2 sqrt2(vec2 vector)
 {
-	return float2(sqrtf(vector.x), sqrtf(vector.y));
+	vector.x = sqrtf(vector.x);
+	vector.y = sqrtf(vector.y);
+	return vector;
 }
 
-inline vec2 log2(vec2 vector)
+vec2 log2(vec2 vector)
 {
-	return float2(logf(vector.x), logf(vector.y));
+	vector.x = logf(vector.x);
+	vector.y = logf(vector.y);
+	return vector;
 }
 
-inline vec2 exp2(vec2 vector)
+vec2 exp2(vec2 vector)
 {
-	return float2(expf(vector.x), expf(vector.y));
+	vector.x = expf(vector.x);
+	vector.y = expf(vector.y);
+	return vector;
 }

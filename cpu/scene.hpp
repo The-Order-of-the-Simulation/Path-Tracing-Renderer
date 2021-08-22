@@ -1,6 +1,6 @@
 #include "common.hpp"
 
-inline vec3 skyColor(vec3 rd)
+vec3 skyColor(vec3 rd)
 {
 	// Light Source
 	if(dot3(float3(0.0F, 1.0F, 0.0F), rd) > 0.8F)
@@ -17,7 +17,7 @@ inline vec3 skyColor(vec3 rd)
 // Ray-Marching Hit Distance
 #define hitDist 0.0001F
 
-inline float DE(vec3 pos)
+float DE(vec3 pos)
 {
 	float minDist = 1000.0F;
 
@@ -39,7 +39,7 @@ inline float DE(vec3 pos)
 }
 
 // SDF Tetrahedron Numerical Normals
-inline vec3 sampleNormal(vec3 pos)
+vec3 sampleNormal(vec3 pos)
 {
 	return normalize3(add_vec3(add_vec3(add_vec3(
 	multiply_vec3f(float3(-1.0F, -1.0F, -1.0F), DE(add_vec3(pos, multiply_vec3f(float3(-1.0F, -1.0F, -1.0F), hitDist)))),
@@ -48,7 +48,7 @@ inline vec3 sampleNormal(vec3 pos)
 	multiply_vec3f(float3( 1.0F,  1.0F, -1.0F), DE(add_vec3(pos, multiply_vec3f(float3( 1.0F,  1.0F, -1.0F), hitDist))))));
 }
 
-inline intersection trace(vec3 ro, vec3 rd)
+intersection trace(vec3 ro, vec3 rd)
 {
 	intersection outInt;
 	outInt.tMin = -1.0F;
@@ -81,7 +81,7 @@ inline intersection trace(vec3 ro, vec3 rd)
 }
 */
 
-inline intersection process_hit(intersection t0, intersection t1)
+intersection process_hit(intersection t0, intersection t1)
 {
 	if(!t1.hit)
 	{
@@ -102,7 +102,7 @@ inline intersection process_hit(intersection t0, intersection t1)
 	return t0;
 }
 
-inline intersection trace(vec3 ro, vec3 rd)
+intersection trace(vec3 ro, vec3 rd)
 {
 	intersection t;
 	t.hit = false;

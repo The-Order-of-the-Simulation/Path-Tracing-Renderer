@@ -17,7 +17,7 @@ using namespace std;
 // Include Scene Header
 #include "scene.hpp"
 
-inline vec3 radiance(vec3 ro, vec3 rd)
+vec3 radiance(vec3 ro, vec3 rd)
 {
 	vec3 rayPos = ro, attenuation = float3f(1.0F);
 

@@ -1,10 +1,4 @@
 echo
-echo Cleaning...
-rm -f -r CMakeFiles
-rm -f cmake_install.cmake
-rm -f CMakeCache.txt
-rm -f OpenPT
-echo
 echo Generating CMake Project...
 echo
 cmake CMakeLists.txt

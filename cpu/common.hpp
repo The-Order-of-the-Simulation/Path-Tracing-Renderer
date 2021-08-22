@@ -49,7 +49,7 @@ typedef struct {
 // https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
 
 // Sphere Intersection Function
-inline intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
+intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
 {
 	intersection t;
 
@@ -103,7 +103,7 @@ vec3 triangleInt(vec3 ro, vec3 rd, vec3 v0, vec3 v1, vec3 v2 )
 uint32_t ns;
 
 // Triple32 Hash: https://nullprogram.com/blog/2018/07/31/
-inline uint32_t triple32(uint32_t x)
+uint32_t triple32(uint32_t x)
 {
 	x ^= x >> 17U;
 	x *= 0xED5AD4BBU;
@@ -116,7 +116,7 @@ inline uint32_t triple32(uint32_t x)
 }
 
 // Uniform Random Value Between 0.0 and 1.0
-inline float randomFloat()
+float randomFloat()
 {
 	ns = triple32(ns);
 	return float(ns)/float(0xFFFFFFFFU);
@@ -124,7 +124,7 @@ inline float randomFloat()
 
 // Uniform Random Vectors
 
-inline vec2 rand2()
+vec2 rand2()
 {
 	vec2 vector;
 	vector.x = randomFloat();
@@ -132,7 +132,7 @@ inline vec2 rand2()
 	return vector;
 }
 
-inline vec3 rand3()
+vec3 rand3()
 {
 	vec3 vector;
 	vector.x = randomFloat();
@@ -141,7 +141,7 @@ inline vec3 rand3()
 	return vector;
 }
 
-inline vec4 rand4()
+vec4 rand4()
 {
 	vec4 vector;
 	vector.x = randomFloat();
@@ -153,7 +153,7 @@ inline vec4 rand4()
 
 // Random Uniform Direction
 
-inline vec2 udir2()
+vec2 udir2()
 {
 	float z = randomFloat();
 	float r = 2.0F*pi*z;
@@ -161,7 +161,7 @@ inline vec2 udir2()
 	return float2(s, c);
 }
 
-inline vec3 udir3()
+vec3 udir3()
 {
 	vec2 z = rand2();
 	vec2 r = float2(2.0F*pi*z.x, acosf(2.0F*z.y-1.0F));
@@ -177,19 +177,19 @@ inline vec3 udir3()
 
 // Normalized Random Vectors (Gaussian Distribution)
 
-inline vec2 nrand2(float sigma, vec2 mean)
+vec2 nrand2(float sigma, vec2 mean)
 {
 	vec2 z = rand2();
 	return add_vec2(multiply_vec2f(float2(cosf(2.0F*pi*z.y), sinf(2.0F*pi*z.y)), sigma*sqrtf(-2.0F*logf(z.x))), mean);
 }
 
-inline vec3 nrand3(float sigma, vec3 mean)
+vec3 nrand3(float sigma, vec3 mean)
 {
 	vec4 z = rand4();
 	return add_vec3(multiply_vec3f(multiply_vec3(sqrt3(multiply_vec3f(log3(float3(z.x, z.x, z.y     )), -2.0F)), float3(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w))), sigma), mean);
 }
 
-inline vec4 nrand4(float sigma, vec4 mean)
+vec4 nrand4(float sigma, vec4 mean)
 {
 	vec4 z = rand4();
 	return add_vec4(multiply_vec4f(multiply_vec4(sqrt4(multiply_vec4f(log4(float4(z.x, z.x, z.y, z.y)), -2.0F)), float4(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w), sinf(2.0F*pi*z.w))), sigma), mean);
@@ -198,7 +198,7 @@ inline vec4 nrand4(float sigma, vec4 mean)
 // ##### Other Functions #####
 
 // HDR Exposure Tonemap
-inline vec3 tonemap(vec3 color, float exposure)
+vec3 tonemap(vec3 color, float exposure)
 {
 	color = multiply_vec3f(color, exposure);
 
@@ -207,7 +207,7 @@ inline vec3 tonemap(vec3 color, float exposure)
 }
 
 // Blackman-Harris Pixel Filter
-inline vec2 pixelFilter(vec2 pixelCoord)
+vec2 pixelFilter(vec2 pixelCoord)
 {
 	// https://en.wikipedia.org/wiki/Window_function#Blackman–Harris_window
 	// w[n] = a0-a1*cos(2*pi*n/N)+a2*cos(4*pi*n/N)-a3*cos(6*pi*n/N)
