@@ -5,7 +5,7 @@
 #define IMAGE_SIZE_Y 360
 
 // Samples per Pixel
-#define SPP 128
+#define SPP 32
 
 // Maximum Light Bounces
 #define MAX_BOUNCES 16

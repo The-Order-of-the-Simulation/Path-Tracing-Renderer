@@ -14,132 +14,8 @@ using namespace std;
 
 // ##### Rendering #####
 
-inline vec3 skyColor(vec3 rd)
-{
-	// Light Source
-	if(dot3(float3(0.0F, 1.0F, 0.0F), rd) > 0.8F)
-	{
-		return float3(2.0F, 10.0F, 2.0F);
-	}
-
-	float x = max(dot3(float3(0.0F, 1.0F, 0.0F), rd), 0.0F)+(max(dot3(float3(0.0F, -1.0F, 0.0F), rd), 0.0F)*0.05F);
-
-	return float3f(0.8F*x+0.2F);
-}
-
-intersection process_hit(intersection t0, intersection t1)
-{
-	// If neither intersection hit, this function will return t0
-
-	if(t1.hit)
-	{
-		if(t0.hit)
-		{
-			intersection t;
-			t.tMin = min(t0.tMin, t1.tMin);
-			t.tMax = max(t0.tMax, t1.tMax);
-			t.hit = true;
-			t.normal = t0.tMin < t1.tMin ? t0.normal : t1.normal;
-
-			return t;
-		}
-
-		return t1;
-	}
-
-	return t0;
-}
-
-/*
-inline intersection trace(vec3 ro, vec3 rd)
-{
-	intersection t;
-	t.hit = false;
-
-	uint32_t seed = 1U;
-
-	for(int i = 0; i < 8; i++)
-	{
-		// Calculate Sphere Position
-		vec3 spherePosition;
-		seed = triple32(seed); spherePosition.x = float(seed)/float(0xFFFFFFFFU);
-		seed = triple32(seed); spherePosition.y = float(seed)/float(0xFFFFFFFFU);
-		seed = triple32(seed); spherePosition.z = float(seed)/float(0xFFFFFFFFU);
-		spherePosition = multiply_vec3f(subtract_vec3f(spherePosition, 0.5F), 2.0F);
-
-		// Calculate Intersection
-		intersection t0 = sphere(ro, rd, spherePosition, 0.5F);
-		t = process_hit(t, t0);
-	}
-
-	return t;
-}
-*/
-
-inline float DE(vec3 pos)
-{
-	float minDist = 1000.0F;
-
-	uint32_t seed = 1U;
-
-	for(int i = 0; i < 8; i++)
-	{
-		// Calculate Sphere Position
-		vec3 spherePosition;
-		seed = triple32(seed); spherePosition.x = float(seed)/float(0xFFFFFFFFU);
-		seed = triple32(seed); spherePosition.y = float(seed)/float(0xFFFFFFFFU);
-		seed = triple32(seed); spherePosition.z = float(seed)/float(0xFFFFFFFFU);
-		spherePosition = multiply_vec3f(subtract_vec3f(spherePosition, 0.5F), 2.0F);
-		spherePosition = subtract_vec3(pos, spherePosition);
-		minDist = min(minDist, dot3(spherePosition, spherePosition));
-	}
-
-	return sqrtf(minDist)-0.5F;
-}
-
-#define hitDist 0.0001F
-
-inline vec3 sampleNormal(vec3 pos)
-{
-	const vec2 k = float2(-1.0F, 1.0F);
-	return normalize3(add_vec3(add_vec3(add_vec3(
-	multiply_vec3f(float3(k.x, k.x, k.x), DE(add_vec3(pos, multiply_vec3f(float3(k.x, k.x, k.x), hitDist)))),
-	multiply_vec3f(float3(k.x, k.y, k.y), DE(add_vec3(pos, multiply_vec3f(float3(k.x, k.y, k.y), hitDist))))),
-	multiply_vec3f(float3(k.y, k.x, k.y), DE(add_vec3(pos, multiply_vec3f(float3(k.y, k.x, k.y), hitDist))))),
-	multiply_vec3f(float3(k.y, k.y, k.x), DE(add_vec3(pos, multiply_vec3f(float3(k.y, k.y, k.x), hitDist))))));
-}
-
-inline intersection trace(vec3 ro, vec3 rd)
-{
-	intersection outInt;
-	outInt.tMin = -1.0F;
-	outInt.tMax = -1.0F;
-	outInt.hit = false;
-
-	float t = 0.0F;
-
-	for(int i = 0; i < 128; i++)
-	{
-		if(t > 32.0F)
-		{
-			break;
-		}
-
-		float td = DE(add_vec3(ro, multiply_vec3f(rd, t)));
-
-		if(td < hitDist)
-		{
-			outInt.tMin = t;
-			outInt.hit = true;
-			outInt.normal = sampleNormal(add_vec3(ro, multiply_vec3f(rd, t)));
-			return outInt;
-		}
-
-		t += td;
-	}
-
-	return outInt;
-}
+// Include Scene Header
+#include "scene.hpp"
 
 inline vec3 radiance(vec3 ro, vec3 rd)
 {
@@ -155,7 +31,7 @@ inline vec3 radiance(vec3 ro, vec3 rd)
 		}
 
 		rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin-0.001F));
-		attenuation = multiply_vec3(attenuation, float3(0.200F, 0.200F, 0.800F));
+		attenuation = multiply_vec3(attenuation, float3(0.200F, 0.400F, 0.800F));
 		rd = normalize3(reflect3(rd, normalize3(nrand3(0.5F, t.normal))));
 	}
 

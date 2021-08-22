@@ -1,4 +1,7 @@
+#pragma once
+
 #include <cmath>
+using namespace std;
 
 // ##### Constants #####
 
@@ -16,12 +19,28 @@
 #include "vector-math/vec4.hpp"
 #include "vector-math/ivec4.hpp"
 
-// Intersection Data Bundle
+// Material Properties Data
+typedef struct {
+	// Type of Material
+	bool volume;
+
+	// Surface/Volume Color
+	vec3 baseColor;
+
+	// Surface Roughness
+	float roughness;
+
+	// Volume Anisotropy
+	float anisotropy;
+} material;
+
+// Intersection Data
 typedef struct {
 	float tMin;
 	float tMax;
 	bool hit;
 	vec3 normal;
+	material materialProperties;
 } intersection;
 
 // ##### Intersection Functions #####
@@ -30,7 +49,7 @@ typedef struct {
 // https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
 
 // Sphere Intersection Function
-intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
+inline intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
 {
 	intersection t;
 
