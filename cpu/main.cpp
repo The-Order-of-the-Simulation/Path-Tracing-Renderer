@@ -30,8 +30,8 @@ vec3 radiance(vec3 ro, vec3 rd)
 			return multiply_vec3(skyColor(rd), attenuation);
 		}
 
-		rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin-0.001F));
-		attenuation = multiply_vec3(attenuation, float3(0.200F, 0.400F, 0.800F));
+		rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin-0.0001F));
+		attenuation = multiply_vec3(attenuation, float3(0.600F, 0.700F, 0.800F));
 		rd = normalize3(reflect3(rd, normalize3(nrand3(0.5F, t.normal))));
 	}
 

@@ -8,9 +8,9 @@ vec3 skyColor(vec3 rd)
 		return float3f(10.0F);
 	}
 
-	float atmosphere = max(dot3(float3(0.0F, 1.0F, 0.0F), rd), 0.0F)+(max(dot3(float3(0.0F, -1.0F, 0.0F), rd), 0.0F)*0.05F)+0.2F;
+	float atmosphere = max(dot3(float3(0.0F, 1.0F, 0.0F), rd), 0.0F)+(max(dot3(float3(0.0F, -1.0F, 0.0F), rd), 0.0F)*0.2F)+0.2F;
 
-	return float3f(0.8F*atmosphere);
+	return float3f(0.35F*atmosphere);
 }
 
 /*
@@ -109,7 +109,7 @@ intersection trace(vec3 ro, vec3 rd)
 
 	uint32_t seed = 1U;
 
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < 8; i++)
 	{
 		// Calculate Sphere Position
 		vec3 spherePosition;
@@ -118,7 +118,7 @@ intersection trace(vec3 ro, vec3 rd)
 		seed = triple32(seed); spherePosition.z = float(seed)/float(0xFFFFFFFFU);
 		spherePosition = multiply_vec3f(subtract_vec3f(spherePosition, 0.5F), 2.0F);
 
-		intersection t0 = sphere(ro, rd, spherePosition, 0.5F);
+		intersection t0 = sphere(ro, rd, spherePosition, 0.35F);
 		t = process_hit(t, t0);
 	}
 
