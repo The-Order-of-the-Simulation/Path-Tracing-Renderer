@@ -69,6 +69,15 @@ intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
 	h = sqrtf(h);
 
 	t.tMin = -b-h;
+
+	if(t.tMin < 0.0F)
+	{
+		t.tMin = -1.0F;
+		t.tMax = -1.0F;
+		t.hit = false;
+		return t;
+	}
+
 	t.tMax = -b+h;
 	t.hit = true;
 	t.normal = normalize3(subtract_vec3(add_vec3(ro, multiply_vec3f(rd, t.tMin)), sphPos));

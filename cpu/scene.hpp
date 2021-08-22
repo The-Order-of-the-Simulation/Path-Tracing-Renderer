@@ -83,9 +83,9 @@ intersection trace(vec3 ro, vec3 rd)
 
 intersection process_hit(intersection t0, intersection t1)
 {
-	if(!t1.hit)
+	if(t1.hit)
 	{
-		if(!t0.hit)
+		if(t0.hit)
 		{
 			intersection t;
 			t.tMin = min(t0.tMin, t1.tMin);
