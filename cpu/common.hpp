@@ -221,7 +221,14 @@ vec2 pixelFilter(vec2 pixelCoord)
 	// https://en.wikipedia.org/wiki/Window_function#Blackman–Harris_window
 	// w[n] = a0-a1*cos(2*pi*n/N)+a2*cos(4*pi*n/N)-a3*cos(6*pi*n/N)
 	// a0 = 0.35875; a1 = 0.48829; a2 = 0.14128; a3 = 0.01168
+
+	const float a0 = 0.35875F;
+	const float a1 = 0.48829F;
+	const float a2 = 0.14128F;
+	const float a3 = 0.01168F;
+
 	float n = 0.5F*randomFloat()+0.5F;
-	float w = 0.35875F-0.48829F*cos(2.0F*pi*n)+0.14128F*cos(4.0F*pi*n)-0.01168F*cos(6.0F*pi*n);
+	float w = a0-a1*cosf(2.0F*pi*n)+a2*cosf(4.0*pi*n)-a3*cosf(6.0F*pi*n);
+
 	return add_vec2(pixelCoord, multiply_vec2f(udir2(), 2.0F*w));
 }

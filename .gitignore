@@ -1,16 +1,60 @@
 # Builds
-*out
+OpenPT
+OpenPT.exe
 
 # CMake
-CMakeSettings.json
-CMakeFiles
+build
 cmake_install.cmake
 CMakeCache.txt
+CMakeFiles
+CMakeSettings.json
 Makefile
 
+# Compiled Dynamic libraries
+*.dll
+*.dylib
+*.so
+
+# Compiled Object files
+*.o
+*.obj
+*.lo
+*.slo
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.app
+*.exe
+*.out
+
+# Fortran module files
+*.mod
+*.smod
+
 # IDE Folders
-*.vs
-*.vscode
+.vs
+.vscode
+
+# Libraries
+glm
+glm-0.9.9.8.7z
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Prerequisites
+*.d
+
+# Renders
+render
+render.pfm
+render.ppm
 
 # Windows File System
 desktop.ini

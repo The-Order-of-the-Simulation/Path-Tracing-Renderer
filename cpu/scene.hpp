@@ -92,7 +92,7 @@ intersection process_hit(intersection t0, intersection t1)
 			t.tMax = max(t0.tMax, t1.tMax);
 			t.hit = true;
 			t.normal = t0.tMin < t1.tMin ? t0.normal : t1.normal;
-
+			t.materialProperties = t0.tMin < t1.tMin ? t0.materialProperties : t1.materialProperties;
 			return t;
 		}
 
@@ -107,9 +107,10 @@ intersection trace(vec3 ro, vec3 rd)
 	intersection t;
 	t.hit = false;
 
-	uint32_t seed = 1U;
+	//uint32_t seed = 1U;
+	uint32_t seed = 420691337U;
 
-	for(int i = 0; i < 8; i++)
+	for(int i = 0; i < 32; i++)
 	{
 		// Calculate Sphere Position
 		vec3 spherePosition;
@@ -118,9 +119,20 @@ intersection trace(vec3 ro, vec3 rd)
 		seed = triple32(seed); spherePosition.z = float(seed)/float(0xFFFFFFFFU);
 		spherePosition = multiply_vec3f(subtract_vec3f(spherePosition, 0.5F), 2.0F);
 
-		intersection t0 = sphere(ro, rd, spherePosition, 0.35F);
+		seed = triple32(seed);
+
+		intersection t0 = sphere(ro, rd, spherePosition, max(0.25F*(float(seed)/float(0xFFFFFFFFU)), 0.05F));
+
+		seed = triple32(seed); t0.materialProperties.baseColor.x = float(seed)/float(0xFFFFFFFFU);
+		seed = triple32(seed); t0.materialProperties.baseColor.y = float(seed)/float(0xFFFFFFFFU);
+		seed = triple32(seed); t0.materialProperties.baseColor.z = float(seed)/float(0xFFFFFFFFU);
+
 		t = process_hit(t, t0);
 	}
+
+	t.materialProperties.volume = false;
+	//t.materialProperties.baseColor = float3(0.600F, 0.700F, 0.800F);
+	t.materialProperties.roughness = randomFloat() < 0.8F ? 0.5F : 0.0F;
 
 	return t;
 }

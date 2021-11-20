@@ -1,59 +1,117 @@
 # Path-Tracing Renderer
 
-This repository contains the source code for The Order of the Simulation community Path-Tracing Renderer.
+This project renders images using [Path-Tracing](https://en.wikipedia.org/wiki/Path_tracing).
+
+## Features
+
+### Implemented
+
+- Support for Bidirectional Scattering Distribution Functions
+  - Lambertian BRDF included
+- Portable Pix Map (`*.ppm`) export
+  - 8-BPC Binary
+
+### TODO
+
+- Better camera system
+  - Optional camera mechanics simulation
+    - Lens dynamics, e.g. focal length, aperature, distortion
+- Bidirectional Path-Tracing
+  - Optional, since it isn't good for all scenarios
+- CPU + Vulkan render device integration
+  - Vulkan only avaiable as a compile option for easier compilation for users who don't need Vulkan support
+- Multiple Importance Sampling (MIS)
+- Next Event Estimation (NEE)
+- Portable Float Map (`*.pfm`) export
+  - Easier to implement than OpenEXR, but has the same functionality (for current purposes)
+  - HDR (no tonemapping, for editing afterwards)
+- Spectral rendering?
+  - This repository isn't gonna be fit for scientific use for a long time
+- Variable scenes without re-compiling
+- Variable settings without re-compiling
 
 ## Compiling
 
-Currently the CPU and Vulkan renderers are seperate. There is plans in the future to merge them into one program that can select either device and render the same scene.
+> This section is under construction
 
----
+### Notices
 
-### Windows
+#### GLM
 
-This will walk you through compiling this project on a Windows 10 (or possibly later) machine using Visual Studio.
-
-#### CPU
-
-This section is a work in progress
+> We are now using [GLM (OpenGL Mathematics)](https://github.com/g-truc/glm) which makes compiling a little bit more difficult. While custom vector math was fun and easy to compile since everything came with the repository, it wasn't very practical for development...
 
 #### Vulkan
 
-After installing [Visual Studio](https://visualstudio.microsoft.com/) and the [Vulkan SDK](https://vulkan.lunarg.com/sdk/home#windows), open `CMakeLists.txt` in Visual Studio.
+> Right now the Vulkan version of the renderer utilizes the Vulkan SDK. It's not very easy to set up for cross-platform and having a compile option to enable/disable it for easier compilation is on the TODO.
 
-This section is a work in progress
+### General Cross-Platform
 
----
+If you want to bring your own compiler, all you need to do is make sure you have [GLM](https://github.com/g-truc/glm) installed and compile `main.cpp` with POISX Threads support.
 
-### Linux
+### Linux (GCC)
 
-This will walk you through compiling this project on a Debian-based distro (e.g. Ubuntu) using Make and GCC/Clang.
-
-#### CPU
-
-First install `build-essential` by running
+To compile this project on a Debian-based Linux system using [GCC (GNU Compiler Collection)](https://gcc.gnu.org/), just make sure you have it installed. If you don't know if you have it, you can install it by running:
 
 ```sh
 sudo apt install build-essential
 ```
 
-Then enter the CPU directory by running
+If [GCC](https://gcc.gnu.org/) is already installed, apt will either say you have the latest version or tell you an upgrade is available. Now, make sure you have [GLM](https://github.com/g-truc/glm) installed. If you don't know if you have it, you can install it by runnning:
 
 ```sh
-cd cpu
+sudo apt install libglm-dev
 ```
 
-Finally, compile the project by running
+Once you have [GLM](https://github.com/g-truc/glm), you can compile the project by running the build script:
 
-```sh
-make
+```bash
+build.sh
 ```
 
-#### Vulkan
+You should now be able to run the executable `OpenPT` simply by using:
 
-First install the [Vulkan SDK](https://vulkan.lunarg.com/) by running:
-
-```sh
-sudo apt install vulkan-sdk
+```bash
+./OpenPT
 ```
 
-This section is a work in progress
+### Windows (Mingw-w64)
+
+To compile this project on a Windows system using [Mingw-w64](https://www.mingw-w64.org/), just make sure you have it installed. If you don't have it, you can get it at <https://www.mingw-w64.org/downloads/>. Now, make sure you grab the latest release of [GLM](https://github.com/g-truc/glm). If you don't have it, you can get it at <https://github.com/g-truc/glm>. Once you have downloaded the latest release of [GLM](https://github.com/g-truc/glm), extract the archive and rename the folder it creates to `glm`. You can now compile the project by running the build script:
+
+```cmd
+build.bat
+```
+
+You should now be able to run the executable `OpenPT.exe` from File Explorer, or simply by using:
+
+```cmd
+OpenPT.exe
+```
+
+### MacOS
+
+MacOS is not and will not be officially supported. You will just have to test bring your own compiler and test your luck. There is no official MacOS support because I ([@Zi7ar21](https://github.com/Zi7ar21)) do not have access to a Mac and have no interest in getting one because Apple's ecosystem is absolutely proprietary and cringe. Normally I would just disregard Mac support entirely but if you do have an issue running this then you can submit an issue and I _might_ fix it.
+
+## Running
+
+At this time there isn't any command-line arguments. You can just run the executable (either `OpenPT` or `OpenPT.exe`) and it will render the scene.
+
+## Linux
+
+```bash
+./OpenPT
+```
+
+If the executable isn't already marked as an executable, run:
+
+```bash
+sudo chmod +x ./OpenPT
+```
+
+## Windows
+
+Double-click `OpenPT.exe` in File Explorer, or run:
+
+```cd
+OpenPT.exe
+```

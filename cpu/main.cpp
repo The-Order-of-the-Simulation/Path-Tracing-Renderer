@@ -30,9 +30,24 @@ vec3 radiance(vec3 ro, vec3 rd)
 			return multiply_vec3(skyColor(rd), attenuation);
 		}
 
+		/*
+		if(t.materialProperties.volume)
+		{
+			rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin));
+			attenuation = multiply_vec3(attenuation, t.materialProperties.baseColor);
+			rd = normalize3(nrand3(t.materialProperties.anisotropy, rd));
+		}
+		else
+		{
+			rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin-0.0001F));
+			attenuation = multiply_vec3(attenuation, t.materialProperties.baseColor);
+			rd = normalize3(reflect3(rd, normalize3(nrand3(t.materialProperties.roughness, t.normal))));
+		}
+		*/
+
 		rayPos = add_vec3(rayPos, multiply_vec3f(rd, t.tMin-0.0001F));
-		attenuation = multiply_vec3(attenuation, float3(0.600F, 0.700F, 0.800F));
-		rd = normalize3(reflect3(rd, normalize3(nrand3(0.5F, t.normal))));
+		attenuation = multiply_vec3(attenuation, t.materialProperties.baseColor);
+		rd = normalize3(reflect3(rd, normalize3(nrand3(t.materialProperties.roughness, t.normal))));
 	}
 
 	// Sample Expired
