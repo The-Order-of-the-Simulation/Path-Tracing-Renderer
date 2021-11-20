@@ -41,8 +41,19 @@ intersection trace(vec3 ro, vec3 rd)
 	intersection t;
 	t.hit = false;
 
-	vec3 spherePosition = vec3(0.0, 0.0, -5.0);
-	intersection t0 = sphere(ro, rd, spherePosition, 0.35F);
-	t = process_hit(t, t0);
+	uint32_t seed = 1U;
+
+	for(int i = 0; i < 8; i++)
+	{
+		// Calculate Sphere Position
+		vec3 spherePosition;
+		seed = triple32(seed); spherePosition.x = float(seed)/float(0xFFFFFFFFU);
+		seed = triple32(seed); spherePosition.y = float(seed)/float(0xFFFFFFFFU);
+		seed = triple32(seed); spherePosition.z = float(seed)/float(0xFFFFFFFFU);
+		spherePosition = (spherePosition - vec3(0.5F)) * 2.0F;
+
+		intersection t0 = sphere(ro, rd, spherePosition, 0.35F);
+		t = process_hit(t, t0);
+	}
 	return t;
 }
