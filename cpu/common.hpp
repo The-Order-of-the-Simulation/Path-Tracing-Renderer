@@ -10,14 +10,7 @@ using namespace std;
 
 // ##### Data Types #####
 
-#include "vector-math/vec2.hpp"
-#include "vector-math/ivec2.hpp"
-
-#include "vector-math/vec3.hpp"
-#include "vector-math/ivec3.hpp"
-
-#include "vector-math/vec4.hpp"
-#include "vector-math/ivec4.hpp"
+#include "vectormath.hpp"
 
 // Material Properties Data
 typedef struct {
@@ -36,9 +29,9 @@ typedef struct {
 
 // Intersection Data
 typedef struct {
-	float tMin;
-	float tMax;
-	bool hit;
+	float tMin = -1.0;
+	float tMax = -1.0;
+	bool hit = false;
 	vec3 normal;
 	material materialProperties;
 } intersection;
@@ -49,38 +42,24 @@ typedef struct {
 // https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
 
 // Sphere Intersection Function
-intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
-{
+intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad) {
 	intersection t;
 
-	vec3 oc = subtract_vec3(ro, sphPos);
-	float b = dot3(oc, rd);
-	float c = dot3(oc, oc)-(sphRad*sphRad);
+	vec3 oc = ro - sphPos;
+	float b = dot(oc, rd);
+	float c = dot(oc, oc)-(sphRad*sphRad);
 	float h = b*b-c;
 
-	if(h < 0.0F)
-	{
-		t.tMin = -1.0F;
-		t.tMax = -1.0F;
-		t.hit = false;
-		return t;
-	}
-
+	if(h < 0.0F) return t;
+	
 	h = sqrtf(h);
-
 	t.tMin = -b-h;
 
-	if(t.tMin < 0.0F)
-	{
-		t.tMin = -1.0F;
-		t.tMax = -1.0F;
-		t.hit = false;
-		return t;
-	}
+	if(t.tMin < 0.0F) return t;
 
 	t.tMax = -b+h;
 	t.hit = true;
-	t.normal = normalize3(subtract_vec3(add_vec3(ro, multiply_vec3f(rd, t.tMin)), sphPos));
+	t.normal = normalize(ro + (rd * t.tMin) - sphPos);
 
 	return t;
 }
@@ -88,20 +67,20 @@ intersection sphere(vec3 ro, vec3 rd, vec3 sphPos, float sphRad)
 // Triangle Intersection Function
 vec3 triangleInt(vec3 ro, vec3 rd, vec3 v0, vec3 v1, vec3 v2 )
 {
-	vec3 v1v0 = subtract_vec3(v1, v0);
-	vec3 v2v0 = subtract_vec3(v2, v0);
-	vec3 rov0 = subtract_vec3(ro, v0);
+	vec3 v1v0 = v1 - v0;
+	vec3 v2v0 = v2 - v0;
+	vec3 rov0 = ro - v0;
 	vec3  n = cross(v1v0, v2v0);
 	vec3  q = cross(rov0, rd  );
-	float d = 1.0F/dot3(rd, n);
-	float u = d*dot3(negate3(q), v2v0);
-	float v = d*dot3(        q , v1v0);
-	float t = d*dot3(negate3(n), rov0);
+	float d = 1.0F/dot(rd, n);
+	float u = d*dot(q * -1.0, v2v0);
+	float v = d*dot(        q , v1v0);
+	float t = d*dot(n * -1.0, rov0);
 	if(u < 0.0F || u > 1.0F || v < 0.0F || (u+v) > 1.0F )
 	{
 		t = -1.0F;
 	}
-	return float3(t, u, v);
+	return vec3(t, u, v);
 }
 
 // ##### Random Number Generator #####
@@ -112,8 +91,7 @@ vec3 triangleInt(vec3 ro, vec3 rd, vec3 v0, vec3 v1, vec3 v2 )
 uint32_t ns;
 
 // Triple32 Hash: https://nullprogram.com/blog/2018/07/31/
-uint32_t triple32(uint32_t x)
-{
+uint32_t triple32(uint32_t x){
 	x ^= x >> 17U;
 	x *= 0xED5AD4BBU;
 	x ^= x >> 11U;
@@ -125,40 +103,16 @@ uint32_t triple32(uint32_t x)
 }
 
 // Uniform Random Value Between 0.0 and 1.0
-float randomFloat()
-{
+float randomFloat(){
 	ns = triple32(ns);
 	return float(ns)/float(0xFFFFFFFFU);
 }
 
 // Uniform Random Vectors
 
-vec2 rand2()
-{
-	vec2 vector;
-	vector.x = randomFloat();
-	vector.y = randomFloat();
-	return vector;
-}
-
-vec3 rand3()
-{
-	vec3 vector;
-	vector.x = randomFloat();
-	vector.y = randomFloat();
-	vector.z = randomFloat();
-	return vector;
-}
-
-vec4 rand4()
-{
-	vec4 vector;
-	vector.x = randomFloat();
-	vector.y = randomFloat();
-	vector.z = randomFloat();
-	vector.w = randomFloat();
-	return vector;
-}
+vec2 rand2(){return vec2(randomFloat(), randomFloat());}
+vec3 rand3(){return vec3(randomFloat(), randomFloat(), randomFloat());}
+vec4 rand4(){return vec4(randomFloat(), randomFloat(), randomFloat(), randomFloat());}
 
 // Random Uniform Direction
 
@@ -167,15 +121,15 @@ vec2 udir2()
 	float z = randomFloat();
 	float r = 2.0F*pi*z;
 	float s = sinf(r), c = cosf(r);
-	return float2(s, c);
+	return vec2(s, c);
 }
 
 vec3 udir3()
 {
 	vec2 z = rand2();
-	vec2 r = float2(2.0F*pi*z.x, acosf(2.0F*z.y-1.0F));
-	vec2 s = sin2(r), c = cos2(r);
-	return float3(c.x*s.y, s.x*s.y, c.y);
+	vec2 r = vec2(2.0F*pi*z.x, acosf(2.0F*z.y-1.0F));
+	vec2 s = sin(r), c = cos(r);
+	return vec3(c.x*s.y, s.x*s.y, c.y);
 }
 
 /* [insert udir4() here] */
@@ -189,19 +143,19 @@ vec3 udir3()
 vec2 nrand2(float sigma, vec2 mean)
 {
 	vec2 z = rand2();
-	return add_vec2(multiply_vec2f(float2(cosf(2.0F*pi*z.y), sinf(2.0F*pi*z.y)), sigma*sqrtf(-2.0F*logf(z.x))), mean);
+	return (vec2(cosf(2.0F*pi*z.y), sinf(2.0F*pi*z.y)) * sigma*sqrtf(-2.0F*logf(z.x))) + mean;
 }
 
 vec3 nrand3(float sigma, vec3 mean)
 {
 	vec4 z = rand4();
-	return add_vec3(multiply_vec3f(multiply_vec3(sqrt3(multiply_vec3f(log3(float3(z.x, z.x, z.y     )), -2.0F)), float3(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w))), sigma), mean);
+	return ((sqrt((log(vec3(z.x, z.x, z.y)) * -2.0F)) * vec3(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w))) * sigma) + mean;
 }
 
 vec4 nrand4(float sigma, vec4 mean)
 {
 	vec4 z = rand4();
-	return add_vec4(multiply_vec4f(multiply_vec4(sqrt4(multiply_vec4f(log4(float4(z.x, z.x, z.y, z.y)), -2.0F)), float4(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w), sinf(2.0F*pi*z.w))), sigma), mean);
+	return ((sqrt((log(vec4(z.x, z.x, z.y, z.y)) * -2.0F)) * vec4(cosf(2.0F*pi*z.z), sinf(2.0F*pi*z.z), cosf(2.0F*pi*z.w), sinf(2.0F*pi*z.w))) * sigma) + mean;
 }
 
 // ##### Other Functions #####
@@ -209,10 +163,9 @@ vec4 nrand4(float sigma, vec4 mean)
 // HDR Exposure Tonemap
 vec3 tonemap(vec3 color, float exposure)
 {
-	color = multiply_vec3f(color, exposure);
-
+	vec3 tonedcolor = color * exposure;
 	// Tonemap and Output Color
-	return subtract_vec3(float3f(1.0F), exp3(negate3(color)));
+	return vec3(1.0F) - exp(tonedcolor * -1.0);
 }
 
 // Blackman-Harris Pixel Filter
