@@ -58,3 +58,6 @@ render.ppm
 
 # Windows File System
 desktop.ini
+
+# Nix result
+result
