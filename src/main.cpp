@@ -2,127 +2,7 @@
 
 #include "common.hpp"
 
-// ##### #####
-
-#define CAMERA_FOV 1.0f
-
-#define EXPOSURE 1.0f
-
-#define HIT_DIST 0.003f
-
-#define MAX_BOUNCES 5
-
-#define MAX_SAMPLES 32
-
-#define MAX_STEPS 512
-
-/*
-// http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
-float mandelbulb(vec3 p)
-{
-	const float power = 8;
-
-	p = vec3(p.x, p.z, p.y);
-
-	vec3 z = p;
-	float dr = 1;
-	float r  = 0;
-
-	for(unsigned int i = 0; i < 128; i++)
-	{
-		r = length(z);
-
-		if(r > 4.0f)
-		{
-			break;
-		}
-
-		// Convert to Polar Coordinates
-		float theta = glm::acos(z.z/r   );
-		float phi   = glm::atan(z.y, z.x);
-		dr = glm::pow(r, power - 1.0f) * power * dr + 1.0;
-
-		// Scale and Rotate the Point
-		float zr = glm::pow(r, power);
-		theta = theta * power;
-		phi   = phi   * power;
-
-		float sin_theta = glm::sin(theta);
-		float cos_theta = glm::cos(theta);
-		float sin_phi = glm::sin(phi);
-		float cos_phi = glm::cos(phi);
-
-		// Convert back to Cartesian Coordinates
-		z = zr * vec3(sin_theta * cos_phi, sin_theta * sin_phi, cos_theta);
-
-		z += p;
-	}
-
-	return 0.5f * glm::log(r) * r / dr;
-}
-*/
-
-float DE(vec3 p)
-{
-	float DE0 = length(p) - 1.0f;
-
-	float minDE = DE0;
-
-	return minDE;
-}
-
-// SDF Tetrahedron Numerical Normals
-vec3 calculate_normal(vec3 p)
-{
-	return normalize(
-	vec3(-1, -1, -1) * DE(p + vec3(-1, -1, -1) * HIT_DIST) +
-	vec3(-1,  1,  1) * DE(p + vec3(-1,  1,  1) * HIT_DIST) +
-	vec3( 1, -1,  1) * DE(p + vec3( 1, -1,  1) * HIT_DIST) +
-	vec3( 1,  1, -1) * DE(p + vec3( 1,  1, -1) * HIT_DIST)
-	);
-}
-
-raycast trace(vec3 ro, vec3 rd)
-{
-	raycast raycast_data;
-
-	raycast_data.expire = true   ;
-	raycast_data.hit    = false  ;
-	raycast_data.tMin   = -1.0f  ;
-	raycast_data.tMax   = -1.0f  ;
-	raycast_data.normal = vec3(0);
-	raycast_data.material_data.material_id = 0;
-
-	float t = 0;
-
-	for(unsigned int i = 0; i < MAX_STEPS; i++)
-	{
-		vec3 rayPos = ro + rd * t;
-
-		if(glm::abs(rayPos.x) > 2.0f || glm::abs(rayPos.y) > 2.0f || glm::abs(rayPos.z) > 2.1f)
-		{
-			raycast_data.expire = false;
-
-			break;
-		}
-
-		float td = DE(rayPos);
-
-		if(td < HIT_DIST)
-		{
-			raycast_data.expire = false;
-			raycast_data.hit    = true ;
-			raycast_data.tMin   = td   ;
-			raycast_data.normal = calculate_normal(rayPos);
-
-			break;
-		}
-
-		t += td;
-	}
-
-	return raycast_data;
-}
+// ##### Path-Tracing #####
 
 vec3 ortho(vec3 v)
 {
@@ -147,18 +27,6 @@ float PDF(vec3 wi, vec3 wo)
 vec3 BRDF(vec3 wi, vec3 wo)
 {
 	return vec3(0.8f) * inverse_pi;
-}
-
-vec3 sky_radiance(vec3 rd)
-{
-	float d = dot(vec3(0.0f, 1.0f, 0.0f), rd);
-
-	if(d > 0.8f)
-	{
-		return vec3(5.0f);
-	}
-
-	return vec3(0.2f);
 }
 
 vec3 radiance(vec3 ro, vec3 rd)
@@ -201,10 +69,31 @@ vec3 radiance(vec3 ro, vec3 rd)
 	return vec3(-1);
 }
 
+// Blackman-Harris Pixel Filter
+vec2 pixel_filter(vec2 pixel_coord)
+{
+	// https://en.wikipedia.org/wiki/Window_function#Blackman–Harris_window
+	// w[n] = a0-a1*cos(2*pi*n/N)+a2*cos(4*pi*n/N)-a3*cos(6*pi*n/N)
+	// a0 = 0.35875; a1 = 0.48829; a2 = 0.14128; a3 = 0.01168;
+
+	const float a0 = 0.35875f;
+	const float a1 = 0.48829f;
+	const float a2 = 0.14128f;
+	const float a3 = 0.01168f;
+
+	//float n = 0.5f * random_float() + 0.5f;
+	float n = random_float();
+
+	float w = a0 - a1 * glm::cos(2.0f * pi * n) + a2 * glm::cos(4.0f * pi * n) - a3 * glm::cos(6.0f * pi * n);
+
+	return pixel_coord + (2.0f * udir2() * w);
+}
+
+// ##### Main #####
 int main()
 {
 	const unsigned int RENDER_SIZE_X = 640;
-	const unsigned int RENDER_SIZE_Y = 360;
+	const unsigned int RENDER_SIZE_Y = 480;
 	const vec2 resolution = vec2(RENDER_SIZE_X, RENDER_SIZE_Y);
 
 	std::cout << "Initializing..." << std::endl;
@@ -224,14 +113,19 @@ int main()
 		{
 			init_rng( (i)*(RENDER_SIZE_X*RENDER_SIZE_Y)+(pixel_coord.x + pixel_coord.y * RENDER_SIZE_X) );
 
-			vec2 uv = 2.0f * ( ( vec2(pixel_coord) - ( 0.5f * vec2(resolution) ) ) / glm::max(resolution.x, resolution.y) );
+			vec2 uv = 2.0f * ( ( pixel_filter( vec2(pixel_coord) ) - ( 0.5f * vec2(resolution) ) ) / glm::max(resolution.x, resolution.y) );
 
-			vec3 ro = vec3(0.0f, 0.0f, 2.0f);
+			vec3 ro = vec3(0.0f, 0.0f, 4.0f);
 			vec3 rd = normalize( vec3(CAMERA_FOV * uv, -1) );
 
-			color += radiance(ro, rd);
+			vec3 c = radiance(ro, rd);
 
-			samples++;
+			if(c.r >= 0.0f && c.g >= 0.0f && c.b >= 0.0f)
+			{
+				color += radiance(ro, rd);
+
+				samples++;
+			}
 		}
 
 		color = samples != 0 ? color / float(samples) : color;

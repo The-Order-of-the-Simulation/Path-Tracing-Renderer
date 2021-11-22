@@ -23,7 +23,7 @@
             gcc
             glm
           ];
-          buildPhase = "g++ -march=native -O2 -s -std=c++11 -Wall -Wextra -Wshadow \"./src/image.cpp\" \"./src/rng.cpp\" \"./src/main.cpp\" -o \"./OpenPT\"";
+          buildPhase = "g++ -march=native -Ofast -s -std=c++11 -Wall -Wextra -Wshadow \"./src/image.cpp\" \"./src/rng.cpp\" \"./src/scene.cpp\" \"./src/trace.cpp\" \"./src/main.cpp\" -o \"./OpenPT\"";
           installPhase = ''
             mkdir -p $out/bin
             mv OpenPT $out/bin

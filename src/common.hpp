@@ -4,6 +4,20 @@
 #include <glm/glm.hpp>
 using namespace glm;
 
+// ##### Parameters #####
+
+#define CAMERA_FOV 0.5f
+
+#define EXPOSURE 1.0f
+
+#define HIT_DIST 0.003f
+
+#define MAX_BOUNCES 16
+
+#define MAX_SAMPLES 128
+
+#define MAX_STEPS 512
+
 // ##### Constants #####
 
 // http://www.mimirgames.com/articles/programming/digits-of-pi-needed-for-floating-point-numbers/
@@ -60,7 +74,7 @@ void write_frame(image_buffer render_buffer, unsigned int frame_number);
 // ##### Random Number Generator #####
 
 // https://nullprogram.com/blog/2018/07/31/
-uint32_t triple32(uint32_t x);
+//uint32_t triple32(uint32_t x);
 
 void init_rng(uint32_t seed);
 
@@ -91,3 +105,13 @@ vec2 udir2();
 
 // Random Uniform Direction
 vec3 udir3();
+
+// ##### Scene #####
+
+vec3 sky_radiance(vec3 rd);
+
+float DE(vec3 p);
+
+// ##### Trace #####
+
+raycast trace(vec3 ro, vec3 rd);

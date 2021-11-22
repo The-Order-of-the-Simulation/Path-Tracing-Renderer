@@ -53,8 +53,7 @@ glm-0.9.9.8.7z
 
 # Renders
 render
-render.pfm
-render.ppm
+render.*
 
 # Windows File System
 desktop.ini

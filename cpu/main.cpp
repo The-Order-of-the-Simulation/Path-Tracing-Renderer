@@ -126,8 +126,6 @@ int main()
 	// Start Execution Timer
 	auto start = chrono::high_resolution_clock::now();
 
-
-
 	//renderImage(imageBuffer, 0, IMAGE_SIZE_X, 0, IMAGE_SIZE_Y);
 	thread t1(renderImage, imageBuffer, 0, IMAGE_SIZE_X / 2, 0, IMAGE_SIZE_Y / 2);
 	thread t2(renderImage, imageBuffer, IMAGE_SIZE_X / 2, IMAGE_SIZE_X, 0, IMAGE_SIZE_Y / 2);
