@@ -1,11 +1,11 @@
 // ##### Render Parameters #####
 
 // Image Resolution
-#define IMAGE_SIZE_X 1920
-#define IMAGE_SIZE_Y 1080
+#define IMAGE_SIZE_X 640
+#define IMAGE_SIZE_Y 480
 
 // Samples per Pixel
-#define SPP 1024
+#define SPP 100
 
 // Maximum Light Bounces
 #define MAX_BOUNCES 16
