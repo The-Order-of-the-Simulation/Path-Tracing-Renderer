@@ -104,6 +104,9 @@ int main()
 
 	std::cout << "Starting Render..." << std::endl;
 
+	// Initialize Random Number Generator
+	init_rng(1);
+
 	uvec2 pixel_coord;
 	for(pixel_coord.x = 0; pixel_coord.x < RENDER_SIZE_X; pixel_coord.x++) {
 	for(pixel_coord.y = 0; pixel_coord.y < RENDER_SIZE_Y; pixel_coord.y++) {
@@ -111,7 +114,8 @@ int main()
 		unsigned int samples = 0;
 		for(unsigned int i = 0; i < MAX_SAMPLES; i++)
 		{
-			init_rng( (i)*(RENDER_SIZE_X*RENDER_SIZE_Y)+(pixel_coord.x + pixel_coord.y * RENDER_SIZE_X) );
+			//init_rng( (i)*(RENDER_SIZE_X*RENDER_SIZE_Y)+(pixel_coord.x + pixel_coord.y * RENDER_SIZE_X) );
+			//init_rng(i);
 
 			vec2 uv = 2.0f * ( ( pixel_filter( vec2(pixel_coord) ) - ( 0.5f * vec2(resolution) ) ) / glm::max(resolution.x, resolution.y) );
 
@@ -120,6 +124,7 @@ int main()
 
 			vec3 c = radiance(ro, rd);
 
+			// Check if the sample was discarded and accumulate
 			if(c.r >= 0.0f && c.g >= 0.0f && c.b >= 0.0f)
 			{
 				color += radiance(ro, rd);
@@ -130,15 +135,22 @@ int main()
 
 		color = samples != 0 ? color / float(samples) : color;
 
+		#ifdef HDR
+		render_buffer.buffer[pixel_coord.x + (pixel_coord.y * RENDER_SIZE_X)] = color;
+		#else
 		color = clamp(1.0f - glm::exp(-glm::max(color, 0.0f) * EXPOSURE), 0.0f, 1.0f);
-
 		render_buffer.buffer[pixel_coord.x + ( ( (RENDER_SIZE_Y - 1) - pixel_coord.y ) * RENDER_SIZE_X )] = color;
+		#endif
 	}
 	}
 
 	std::cout << "Writing Render to Disk..." << std::endl;
 
-	write_frame(render_buffer, 0);
+	#ifdef HDR
+	write_render_HDR(render_buffer);
+	#else
+	write_render(render_buffer);
+	#endif
 
 	std::cout << "Cleaning Up..." << std::endl;
 

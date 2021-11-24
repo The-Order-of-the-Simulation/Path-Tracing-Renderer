@@ -6,16 +6,25 @@ using namespace glm;
 
 // ##### Parameters #####
 
+// Camera Field of View
 #define CAMERA_FOV 0.5f
 
+// Tonemap Exposure Parameter (only if HDR is disabled)
 #define EXPOSURE 1.0f
 
+// Portable FloatMap
+#define HDR
+
+// Ray-Marching Tolerance
 #define HIT_DIST 0.003f
 
+// Maximum Path-Tracing Bounces
 #define MAX_BOUNCES 16
 
+// Maximum Samples
 #define MAX_SAMPLES 128
 
+// Maximum Ray-Marching Steps
 #define MAX_STEPS 512
 
 // ##### Constants #####
@@ -68,6 +77,10 @@ class image_buffer
 };
 
 // ##### Image Read/Write #####
+
+void write_render(image_buffer render_buffer);
+
+void write_render_HDR(image_buffer render_buffer);
 
 void write_frame(image_buffer render_buffer, unsigned int frame_number);
 

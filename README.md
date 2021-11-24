@@ -6,10 +6,18 @@ This project renders images using [Path-Tracing](https://en.wikipedia.org/wiki/P
 
 ### Implemented
 
+- Naive Lighting Strategy
+- [Netpbm Image Format](https://en.wikipedia.org/wiki/Netpbm#File_formats)
+  - Portable FloatMap (`*.pfm`)
+    - HDR (no tonemapping, for editing afterwards)
+    - RGB32F
+  - Portable PixMap (`*.ppm`)
+    - SDR (built-in exposure tonemap)
+    - RGB8
+- Ray-Marching
+  - [Signed Distance Function (SDF) Rendering](https://en.wikipedia.org/wiki/Signed_distance_function)
 - Support for Bidirectional Scattering Distribution Functions
   - Lambertian BRDF included
-- Portable Pix Map (`*.ppm`) export
-  - 8-BPC Binary
 
 ### TODO
 
@@ -18,13 +26,12 @@ This project renders images using [Path-Tracing](https://en.wikipedia.org/wiki/P
     - Lens dynamics, e.g. focal length, aperature, distortion
 - Bidirectional Path-Tracing
   - Optional, since it isn't good for all scenarios
+- Bounding Volume Hierarchy (BVH)
+  - Will allow for rendering meshes
 - CPU + Vulkan render device integration
   - Vulkan only avaiable as a compile option for easier compilation for users who don't need Vulkan support
 - Multiple Importance Sampling (MIS)
 - Next Event Estimation (NEE)
-- Portable Float Map (`*.pfm`) export
-  - Easier to implement than OpenEXR, but has the same functionality (for current purposes)
-  - HDR (no tonemapping, for editing afterwards)
 - Spectral rendering?
   - This repository isn't gonna be fit for scientific use for a long time
 - Variable scenes without re-compiling

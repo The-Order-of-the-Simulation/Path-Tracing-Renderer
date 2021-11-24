@@ -2,7 +2,8 @@
 
 vec3 sky_radiance(vec3 rd)
 {
-	float d = dot(vec3(0.0f, 1.0f, 0.0f), rd);
+	//float d = dot(vec3(0.0f, 1.0f, 0.0f), rd);
+	float d = rd.y;
 
 	if(d > 0.5f)
 	{

@@ -40,6 +40,6 @@
           path-tracing-renderer
         ];
       };
-    }      
+    }
   );
 }

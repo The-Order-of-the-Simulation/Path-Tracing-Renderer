@@ -11,6 +11,14 @@ vec3 calculate_normal(vec3 p)
 	);
 }
 
+bool inside_bounding_box(vec3 p, vec3 minimum, vec3 maximum)
+{
+	return
+	p.x > minimum.x && p.x < maximum.x &&
+	p.y > minimum.y && p.y < maximum.y &&
+	p.z > minimum.z && p.z < maximum.z;
+}
+
 raycast trace(vec3 ro, vec3 rd)
 {
 	raycast raycast_data;
