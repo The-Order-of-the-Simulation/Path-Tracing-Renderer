@@ -1,7 +1,13 @@
 #pragma once
 
 #include <cmath>
-using namespace std;
+#include <cstdint>
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <fstream>
+
+#include "vectormath.hpp"
 
 // ##### Constants #####
 
@@ -10,31 +16,54 @@ using namespace std;
 
 // ##### Data Types #####
 
-#include "vectormath.hpp"
 
 // Material Properties Data
-typedef struct {
-	// Type of Material
+class material {
+public:
 	bool volume;
-
-	// Surface/Volume Color
 	vec3 baseColor;
-
-	// Surface Roughness
 	float roughness;
-
-	// Volume Anisotropy
 	float anisotropy;
-} material;
+};
 
 // Intersection Data
-typedef struct {
+class intersection {
+public:
 	float tMin = -1.0;
 	float tMax = -1.0;
 	bool hit = false;
 	vec3 normal;
 	material materialProperties;
-} intersection;
+};
+
+class buffer{
+private:
+	int size_x, size_y;
+	vec3 *image_buffer;
+public:
+	buffer(int _size_x, int _size_y) : size_x(_size_x), size_y(_size_y) { image_buffer = new vec3 [size_x * size_y]; }
+
+	void set_pixel(int x, int y, const vec3& color){ image_buffer[x + (y * size_x)] = color; }	
+	void write_buffer(const char* filename){
+		std::ofstream imageFile;
+		imageFile.open(filename);
+
+		imageFile << "P3" << std::endl << size_x << " " << size_y << std::endl << "65535" << std::endl;
+
+		for(int i = 0; i < size_x * size_y; i++)
+		{
+			// Quantization
+			int channel_r = std::min(std::max(int(65535.0F*image_buffer[i].x), 0), 65535);
+			int channel_g = std::min(std::max(int(65535.0F*image_buffer[i].y), 0), 65535);
+			int channel_b = std::min(std::max(int(65535.0F*image_buffer[i].z), 0), 65535);
+
+			imageFile << channel_r << " " << channel_g << " " << channel_b << " ";
+		}
+
+		imageFile << "# Rendered with OpenPT";
+		imageFile.close();
+	} 
+};
 
 // ##### Intersection Functions #####
 
@@ -84,8 +113,6 @@ vec3 triangleInt(vec3 ro, vec3 rd, vec3 v0, vec3 v1, vec3 v2 )
 }
 
 // ##### Random Number Generator #####
-
-#include <cstdint>
 
 // Random Number Generator Seed
 uint32_t ns;
@@ -183,5 +210,5 @@ vec2 pixelFilter(vec2 pixelCoord)
 	float n = 0.5F*randomFloat()+0.5F;
 	float w = a0-a1*cosf(2.0F*pi*n)+a2*cosf(4.0*pi*n)-a3*cosf(6.0F*pi*n);
 
-	return add_vec2(pixelCoord, multiply_vec2f(udir2(), 2.0F*w));
+	return pixelCoord + (udir2() * 2.0F * w);
 }
