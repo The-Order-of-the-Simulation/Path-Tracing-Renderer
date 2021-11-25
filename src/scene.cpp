@@ -44,6 +44,7 @@ float mandelbulb(vec3 p)
 	return 0.5f * glm::log(r) * r / dr;
 }
 
+/*
 float DE(vec3 p, unsigned int *id)
 {
 	*id = 1;
@@ -57,8 +58,8 @@ float DE(vec3 p, unsigned int *id)
 
 	return mandelbulb(p);
 }
+*/
 
-/*
 float DE(vec3 p, unsigned int *id)
 {
 	float DE0 = p.y + 1.0f; // Plane
@@ -72,7 +73,6 @@ float DE(vec3 p, unsigned int *id)
 
 	return minDE;
 }
-*/
 
 void update_material(raycast *raycast_data)
 {

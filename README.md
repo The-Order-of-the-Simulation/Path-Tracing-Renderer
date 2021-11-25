@@ -51,9 +51,21 @@ This project renders images using [Path-Tracing](https://en.wikipedia.org/wiki/P
 
 > Right now the Vulkan version of the renderer utilizes the Vulkan SDK. It's not very easy to set up for cross-platform and having a compile option to enable/disable it for easier compilation is on the TODO.
 
+This guide will not go over compiling with Vulkan, since it's kinda complicated at the moment. Expect that to change in the future.
+
 ### General Cross-Platform
 
-If you want to bring your own compiler, all you need to do is make sure you have [GLM](https://github.com/g-truc/glm) installed and compile `main.cpp` with POISX Threads support.
+If you want to bring your own compiler, first make sure you have [GLM](https://github.com/g-truc/glm) installed. Then, add the following files to your compiler's input:
+
+- `[repository]/src/main.cpp`
+- `[repository]/src/image.cpp`
+- `[repository]/src/path-tracing.cpp`
+- `[repository]/src/rng.cpp`
+- `[repository]/src/scene.cpp`
+- `[repository]/src/sky.cpp`
+- `[repository]/src/trace.cpp`
+
+Finally, make sure you include `[repository]/src/include`.
 
 ### Linux (GCC)
 
