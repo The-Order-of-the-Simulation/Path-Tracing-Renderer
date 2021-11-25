@@ -1,17 +1,4 @@
-#include "common.hpp"
-
-vec3 sky_radiance(vec3 rd)
-{
-	//float d = dot(vec3(0.0f, 1.0f, 0.0f), rd);
-	float d = rd.y;
-
-	if(d > 0.5f)
-	{
-		return vec3(2);
-	}
-
-	return vec3(1) * (glm::max( (0.8f * d) + 0.15f, 0.0f ) + 0.05f);
-}
+#include <common.hpp>
 
 // http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
 float mandelbulb(vec3 p)
@@ -57,8 +44,10 @@ float mandelbulb(vec3 p)
 	return 0.5f * glm::log(r) * r / dr;
 }
 
-float DE(vec3 p)
+float DE(vec3 p, unsigned int *id)
 {
+	*id = 1;
+
 	float l = length(p);
 
 	if(l > 2.3f)
@@ -67,4 +56,39 @@ float DE(vec3 p)
 	}
 
 	return mandelbulb(p);
+}
+
+/*
+float DE(vec3 p, unsigned int *id)
+{
+	float DE0 = p.y + 1.0f; // Plane
+	float DE1 = length(p) - 1.0f; // Sphere
+
+	float minDE = glm::min(DE0, DE1);
+
+	*id = 0; // Null
+	*id = (minDE == DE0) ? 1 : *id; // Plane
+	*id = (minDE == DE1) ? 2 : *id; // Sphere
+
+	return minDE;
+}
+*/
+
+void update_material(raycast *raycast_data)
+{
+	if(raycast_data->material_data.material_id == 1)
+	{
+		raycast_data->material_data.base_color = vec3(0.8f);
+		raycast_data->material_data.roughness  = 0.3f;
+	}
+	else if(raycast_data->material_data.material_id == 2)
+	{
+		raycast_data->material_data.base_color = vec3(0.8f);
+		raycast_data->material_data.roughness  = 0.3f;
+	}
+	else
+	{
+		raycast_data->material_data.base_color = vec3(1.0f, 0.0f, 1.0f);
+		raycast_data->material_data.roughness  = 0.3f;
+	}
 }

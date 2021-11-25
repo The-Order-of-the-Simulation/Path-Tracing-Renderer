@@ -1,1 +1,1 @@
-g++ -march=x86-64 -O2 -s -std=c++11 -Wall -Wextra -Wshadow "./src/image.cpp" "./src/rng.cpp" "./src/scene.cpp" "./src/trace.cpp" "./src/main.cpp" -o "./OpenPT"
+g++ -march=x86-64 -O2 -s -std=c++11 -Wall -Wextra -Wshadow -I"./src/include" "./src/image.cpp" "./src/rng.cpp" "./src/scene.cpp" "./src/trace.cpp" "./src/sky.cpp" "./src/path-tracing.cpp" "./src/main.cpp" -o "./OpenPT"

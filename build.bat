@@ -1,1 +1,1 @@
-g++ -march=native -Ofast -s -std=c++11 -Wall -Wextra -Wshadow -I"./glm" "./src/image.cpp" "./src/rng.cpp" "./src/scene.cpp" "./src/trace.cpp" "./src/main.cpp" -o "./OpenPT.exe"
+g++ -march=native -Ofast -s -std=c++11 -Wall -Wextra -Wshadow -I"./glm" -I"./src/include" "./src/image.cpp" "./src/rng.cpp" "./src/scene.cpp" "./src/trace.cpp" "./src/sky.cpp" "./src/path-tracing.cpp" "./src/main.cpp" -o "./OpenPT.exe"

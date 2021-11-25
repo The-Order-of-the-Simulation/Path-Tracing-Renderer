@@ -38,7 +38,8 @@ Makefile
 
 # IDE Folders
 .vs
-.vscode
+.vscode/settings.json
+.vscode/workspace.code-workspace
 
 # Libraries
 glm

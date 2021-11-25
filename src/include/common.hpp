@@ -13,7 +13,7 @@ using namespace glm;
 #define EXPOSURE 1.0f
 
 // Portable FloatMap
-#define HDR
+//#define HDR
 
 // Ray-Marching Tolerance
 #define HIT_DIST 0.003f
@@ -22,7 +22,7 @@ using namespace glm;
 #define MAX_BOUNCES 16
 
 // Maximum Samples
-#define MAX_SAMPLES 128
+#define MAX_SAMPLES 32
 
 // Maximum Ray-Marching Steps
 #define MAX_STEPS 512
@@ -57,17 +57,17 @@ class raycast
 class image_buffer
 {
 	public:
-		unsigned int buffer_size_x;
-		unsigned int buffer_size_y;
-		unsigned int buffer_size;
+		unsigned int size_x;
+		unsigned int size_y;
+		unsigned int size;
 		vec3 *buffer;
 	public:
-		void allocate(unsigned int size_x, unsigned int size_y)
+		void allocate(unsigned int buffer_size_x, unsigned int buffer_size_y)
 		{
-			buffer_size_x = size_x;
-			buffer_size_y = size_y;
-			buffer_size = size_x * size_y;
-			buffer = (vec3*)malloc(sizeof(vec3) * buffer_size);
+			size_x = buffer_size_x;
+			size_y = buffer_size_y;
+			size = buffer_size_x * buffer_size_y;
+			buffer = (vec3*)malloc(sizeof(vec3) * size);
 		}
 
 		void cleanup()
@@ -121,10 +121,18 @@ vec3 udir3();
 
 // ##### Scene #####
 
-vec3 sky_radiance(vec3 rd);
+float DE(vec3 p, unsigned int *id);
 
-float DE(vec3 p);
+void update_material(raycast *raycast_data);
 
-// ##### Trace #####
+// ##### Ray-Tracing/Ray-Marching #####
+
+raycast process_hit(raycast raycast_data, raycast raycast_data_);
 
 raycast trace(vec3 ro, vec3 rd);
+
+// ##### Rendering #####
+
+vec3 sky_radiance(vec3 rd);
+
+vec3 radiance(vec3 ro, vec3 rd);
